@@ -11,3 +11,12 @@ add_subdirectory(CEasyException)
 include_directories(.)
 
 add_subdirectory(buffer)
+
+add_library(sink sink.h sink.c)
+target_link_libraries(sink buffer)
+
+add_library(source source.h source.c)
+target_link_libraries(source buffer)
+
+add_library(transformation transformation.h transformation.c)
+target_link_libraries(transformation buffer)
