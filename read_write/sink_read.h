@@ -1,7 +1,7 @@
 #ifndef CTRANSFORM_SINK_READ_H
 #define CTRANSFORM_SINK_READ_H
 
-#include "sink.h"
+#include <sink.h>
 
 typedef struct
 {

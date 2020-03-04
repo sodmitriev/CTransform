@@ -1,7 +1,7 @@
 #ifndef CTRANSFORM_SOURCE_MEM_H
 #define CTRANSFORM_SOURCE_MEM_H
 
-#include "source.h"
+#include <source.h>
 
 typedef struct
 {
