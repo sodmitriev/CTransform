@@ -22,3 +22,4 @@ add_library(transformation transformation.h transformation.c)
 target_link_libraries(transformation buffer)
 
 add_subdirectory(read_write)
+add_subdirectory(crypto)
