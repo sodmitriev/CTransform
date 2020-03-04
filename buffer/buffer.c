@@ -80,3 +80,23 @@ size_t buffer_size(const buffer* this)
 {
     return this->size;
 }
+
+void buffer_resize(size_t size, buffer* this)
+{
+    char* new_buf = realloc(this->buf, size);
+    if(!new_buf)
+    {
+        EXCEPTION_THROW_NOMSG(ENOMEM);
+        return;
+    }
+    this->buf = new_buf;
+    this->size = size;
+    if(this->wpos > this->size)
+    {
+        this->wpos = this->size;
+    }
+    if(this->rpos > this->wpos)
+    {
+        this->rpos = this->wpos;
+    }
+}

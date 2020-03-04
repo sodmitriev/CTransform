@@ -1,6 +1,7 @@
 #include "buffer.h"
 #include <CEasyException/exception.h>
 #include <assert.h>
+#include <stdlib.h>
 
 #define HANDLE_EXCEPTION()                  \
 if(EXCEPTION_IS_THROWN)                     \
@@ -24,6 +25,7 @@ int main()
         msg[i] = (char)i;
     }
     buffer_constructor(BUF_SIZE, &buf);
+    HANDLE_EXCEPTION();
 
     assert(buffer_size(&buf) == BUF_SIZE);
     assert(buffer_writable(&buf));
@@ -65,6 +67,33 @@ int main()
     assert(!buffer_writable(&buf));
     assert(!buffer_readable(&buf));
     assert(buffer_write_size(&buf) == 0);
+    assert(buffer_read_size(&buf) == 0);
+
+    buffer_resize(BUF_SIZE * 2, &buf);
+    HANDLE_EXCEPTION();
+
+    assert(buffer_size(&buf) == BUF_SIZE * 2);
+    assert(buffer_writable(&buf));
+    assert(!buffer_readable(&buf));
+    assert(buffer_write_size(&buf) == BUF_SIZE);
+    assert(buffer_read_size(&buf) == 0);
+
+    buffer_resize(BUF_SIZE / 2, &buf);
+    HANDLE_EXCEPTION();
+
+    assert(buffer_size(&buf) == BUF_SIZE / 2);
+    assert(!buffer_writable(&buf));
+    assert(!buffer_readable(&buf));
+    assert(buffer_write_size(&buf) == 0);
+    assert(buffer_read_size(&buf) == 0);
+
+    buffer_resize(BUF_SIZE, &buf);
+    HANDLE_EXCEPTION();
+
+    assert(buffer_size(&buf) == BUF_SIZE);
+    assert(buffer_writable(&buf));
+    assert(!buffer_readable(&buf));
+    assert(buffer_write_size(&buf) == BUF_SIZE - (BUF_SIZE / 2));
     assert(buffer_read_size(&buf) == 0);
 
     buffer_reset(&buf);

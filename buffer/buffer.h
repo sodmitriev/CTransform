@@ -36,4 +36,6 @@ extern void buffer_rinc(size_t off, buffer* this);
 
 extern size_t buffer_size(const buffer* this);
 
+extern void buffer_resize(size_t size, buffer* this);
+
 #endif //CTRANSFORM_BUFFER_H
