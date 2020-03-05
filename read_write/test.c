@@ -1,6 +1,7 @@
 #include <controller.h>
 #include "sink_read.h"
 #include "source_write.h"
+#include "sink_getc.h"
 #include <CEasyException/exception.h>
 #include <stdlib.h>
 #include <assert.h>
@@ -34,42 +35,77 @@ int main()
 
     //Write and read
     {
-        //Base64
+        char buf[sizeof(msg) + 8];
+
+        source_write in;
+        sink_read out;
+
+        controller ctl;
+
+        source_write_constructor(&in);
+        HANDLE_EXCEPTION();
+        sink_read_constructor(&out);
+        HANDLE_EXCEPTION();
+
+        controller_constructor(&ctl);
+        HANDLE_EXCEPTION();
+
+        controller_set_source((source *)&in, &ctl);
+        HANDLE_EXCEPTION();
+        controller_set_sink((sink *)&out, &ctl);
+        HANDLE_EXCEPTION();
+
+        source_write_set(msg, sizeof(int), sizeof(msg) / sizeof(int), &in);
+        sink_read_set(buf, sizeof(int), sizeof(buf) / sizeof(int), &out);
+
+        controller_finalize(&ctl);
+        HANDLE_EXCEPTION();
+
+        assert(source_write_get_result(&in) == sizeof(msg) / sizeof(*msg));
+        assert(sink_read_get_result(&out) == sizeof(msg) / sizeof(*msg));
+        assert(memcmp(buf, msg, sizeof(msg)) == 0);
+
+        controller_destructor(&ctl);
+        source_destructor((source *)&in);
+        sink_destructor((sink *)&out);
+    }
+
+    //Getc
+    {
+        source_write in;
+        sink_getc out;
+
+        controller ctl;
+
+        source_write_constructor(&in);
+        HANDLE_EXCEPTION();
+        sink_getc_constructor(&out);
+        HANDLE_EXCEPTION();
+
+        controller_constructor(&ctl);
+        HANDLE_EXCEPTION();
+
+        controller_set_source((source *)&in, &ctl);
+        HANDLE_EXCEPTION();
+        controller_set_sink((sink *)&out, &ctl);
+        HANDLE_EXCEPTION();
+
+        source_write_set(msg, sizeof(int), sizeof(msg) / sizeof(int), &in);
+
+        for(size_t count = 0; count < sizeof(msg); ++count)
         {
-            char buf[sizeof(msg) + 8];
-
-            source_write in;
-            sink_read out;
-
-            controller ctl;
-
-            source_write_constructor(&in);
-            HANDLE_EXCEPTION();
-            sink_read_constructor(&out);
-            HANDLE_EXCEPTION();
-
-            controller_constructor(&ctl);
-            HANDLE_EXCEPTION();
-
-            controller_set_source((source *)&in, &ctl);
-            HANDLE_EXCEPTION();
-            controller_set_sink((sink *)&out, &ctl);
-            HANDLE_EXCEPTION();
-
-            source_write_set(msg, sizeof(int), sizeof(msg) / sizeof(int), &in);
-            sink_read_set(buf, sizeof(int), sizeof(buf) / sizeof(int), &out);
+            sink_getc_set(&out);
 
             controller_finalize(&ctl);
             HANDLE_EXCEPTION();
 
-            assert(source_write_get_result(&in) == sizeof(msg) / sizeof(*msg));
-            assert(sink_read_get_result(&out) == sizeof(msg) / sizeof(*msg));
-            assert(memcmp(buf, msg, sizeof(msg)) == 0);
-
-            controller_destructor(&ctl);
-            source_destructor((source *)&in);
-            sink_destructor((sink *)&out);
+            assert(sink_end((sink *)&out));
+            assert((char)sink_getc_get_result(&out) == *((const char*)msg + count));
         }
+
+        controller_destructor(&ctl);
+        source_destructor((source *)&in);
+        sink_destructor((sink *)&out);
     }
 
     return 0;
