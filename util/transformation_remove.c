@@ -12,10 +12,6 @@ transformation_call_tab transformation_call_tab_remove =
                 .source_min = (size_t (*)(const transformation *)) transformation_remove_source_min
         };
 
-void transformation_remove_destructor(transformation_remove* this)
-{
-}
-
 void transformation_remove_transform(transformation_remove* this)
 {
     assert(buffer_read_size(this->base.source) >= transformation_remove_source_min(this));
@@ -36,6 +32,8 @@ void transformation_remove_finalize(transformation_remove* this)
     assert(buffer_write_size(this->base.sink) >= transformation_remove_sink_min(this));
 }
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 size_t transformation_remove_sink_min(const transformation_remove* this)
 {
     return 1;
@@ -46,13 +44,18 @@ size_t transformation_remove_source_min(const transformation_remove* this)
     return 1;
 }
 
+void transformation_remove_destructor(transformation_remove* this)
+{
+}
+#pragma GCC diagnostic pop
+
 void transformation_remove_constructor(const char* symbols, size_t size, transformation_remove* this)
 {
     assert(sizeof(this->mask) * 8 > UCHAR_MAX);
     memset(&this->mask, 0, sizeof(this->mask));
     for(size_t i = 0; i < size; ++i)
     {
-        this->mask[(unsigned char)symbols[i] / 8] |= (1u << (unsigned char)((unsigned char)symbols[i] % 8));
+        this->mask[(unsigned char)symbols[i] / 8] |= (uint8_t)(1u << (unsigned char)((unsigned char)symbols[i] % 8));
     }
     this->base.call_tab = &transformation_call_tab_remove;
 }

@@ -3,6 +3,7 @@
 #include <openssl/evp.h>
 #include <errno.h>
 #include <string.h>
+#include <assert.h>
 
 static const unsigned char salt[] = {37, 82, 152, 215, 173, 161, 143, 54};
 
@@ -33,12 +34,20 @@ void transformation_encrypt_constructor(const char* cipher, const char* digest, 
     }
 
     const int key_size = EVP_CIPHER_key_length(ciph);
+    assert(key_size > 0);
     const int iv_size = EVP_CIPHER_iv_length(ciph);
-    const size_t block_size = EVP_CIPHER_block_size(ciph);
+    assert(iv_size > 0);
+    const int block_size = EVP_CIPHER_block_size(ciph);
+    assert(block_size > 0);
     const size_t key_len = strlen(key);
+    if(key_len > INT_MAX)
+    {
+        EXCEPTION_THROW(EINVAL, "Key is too long (max = %d)", INT_MAX);
+        return;
+    }
 
-    unsigned char* raw_key = malloc(key_size);
-    unsigned char* iv = malloc(iv_size);
+    unsigned char* raw_key = malloc((size_t)key_size);
+    unsigned char* iv = malloc((size_t) iv_size);
     if(!raw_key || !iv)
     {
         EXCEPTION_THROW_NOMSG(ENOMEM);
@@ -52,7 +61,7 @@ void transformation_encrypt_constructor(const char* cipher, const char* digest, 
         goto transformation_encrypt_constructor_cleanup;
     }
 
-    if (EVP_BytesToKey(ciph, md, salt, key, key_len, 3, raw_key, iv) != key_size)
+    if (EVP_BytesToKey(ciph, md, salt, (const unsigned char*)key, (int)key_len, 3, raw_key, iv) != key_size)
     {
         EXCEPTION_THROW(ENOANO, "%s", "Failed to initialize key");
         goto transformation_encrypt_constructor_cleanup_ctx;
@@ -66,7 +75,7 @@ void transformation_encrypt_constructor(const char* cipher, const char* digest, 
 
     this->base.call_tab = &transformation_call_tab_encrypt;
     this->ctx = ctx;
-    this->block_size = block_size;
+    this->block_size = (size_t) block_size;
     free(raw_key);
     free(iv);
     return;
@@ -91,25 +100,29 @@ void transformation_encrypt_transform(transformation_encrypt* this)
     {
         size_t num = this->block_size < buffer_read_size(this->base.source) ?
                 this->block_size : buffer_read_size(this->base.source);
-        if ( EVP_EncryptUpdate(this->ctx, buffer_wpos(this->base.sink), &len, buffer_rpos(this->base.source), num ) != 1)
+        assert(num <= INT_MAX); //Because block should be smaller, as it's derived from int return of openssl
+        if ( EVP_EncryptUpdate(this->ctx, (unsigned char*)buffer_wpos(this->base.sink), &len,
+                               (const unsigned char*)buffer_rpos(this->base.source), (int)num ) != 1)
         {
             EXCEPTION_THROW(ENOANO, "%s", "Failed to encrypt block of data");
             return;
         }
+        assert(len >= 0);//OpenSSL should guarantee this
         buffer_rinc(num, this->base.source);
-        buffer_winc(len, this->base.sink);
+        buffer_winc((size_t) len, this->base.sink);
     }
 }
 
 void transformation_encrypt_finalize(transformation_encrypt* this)
 {
     int len;
-    if(EVP_EncryptFinal_ex(this->ctx, buffer_wpos(this->base.sink), &len) != 1)
+    if(EVP_EncryptFinal_ex(this->ctx, (unsigned char*)buffer_wpos(this->base.sink), &len) != 1)
     {
         EXCEPTION_THROW(ENOANO, "%s", "Failed to finalize encryption");
         return;
     }
-    buffer_winc(len, this->base.sink);
+    assert(len >= 0);//OpenSSL should guarantee this
+    buffer_winc((size_t) len, this->base.sink);
 }
 
 size_t transformation_encrypt_sink_min(const transformation_encrypt* this)
@@ -117,7 +130,10 @@ size_t transformation_encrypt_sink_min(const transformation_encrypt* this)
     return this->block_size*2 - 1;
 }
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 size_t transformation_encrypt_source_min(const transformation_encrypt* this)
 {
     return 1;
 }
+#pragma GCC diagnostic pop

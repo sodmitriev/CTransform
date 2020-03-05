@@ -34,8 +34,8 @@ void transformation_hash_transform(transformation_hash* this)
 void transformation_hash_finalize(transformation_hash* this)
 {
     assert(buffer_write_size(this->base.sink) >= this->md_size); //Must be provided by manager
-    int len;
-    if(EVP_DigestFinal_ex(this->ctx, buffer_wpos(this->base.sink), &len) == 0)
+    unsigned int len;
+    if(EVP_DigestFinal_ex(this->ctx, (unsigned char*)buffer_wpos(this->base.sink), &len) == 0)
     {
         EXCEPTION_THROW(ENOANO, "%s", "Failed to finalize hash calculation");
         return;
@@ -50,10 +50,13 @@ size_t transformation_hash_sink_min(const transformation_hash* this)
     return this->md_size;
 }
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 size_t transformation_hash_source_min(const transformation_hash* this)
 {
     return 1;
 }
+#pragma GCC diagnostic pop
 
 void transformation_hash_constructor(const char* digest, transformation_hash* this)
 {
@@ -86,6 +89,6 @@ void transformation_hash_constructor(const char* digest, transformation_hash* th
     }
 
     this->ctx = mdctx;
-    this->md_size = md_len;
+    this->md_size = (size_t) md_len;
     this->base.call_tab = &transformation_call_tab_hash;
 }
