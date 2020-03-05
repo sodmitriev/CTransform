@@ -1,3 +1,4 @@
+#include <controller.h>
 #include "sink_read.h"
 #include "source_write.h"
 #include <CEasyException/exception.h>
@@ -30,49 +31,43 @@ int main()
                        0x68, 0x69, 0x6a, 0x6b, 0x6c, 0x6d, 0x6e, 0x6f,
                        0x70, 0x71, 0x72, 0x73, 0x74, 0x75, 0x76, 0x77,
                        0x78, 0x79, 0x7a, 0x7b, 0x7c, 0x7d, 0x7e, 0x7f};
-    int out[sizeof(msg)];
-    buffer mid;
-    source_write source;
-    sink_read sink;
 
-    EXCEPTION_CLEAR();
-
-    buffer_constructor((sizeof(int) / 2) * 5, &mid);
-    HANDLE_EXCEPTION();
-
-    source_write_constructor(msg, sizeof(int), sizeof(msg) / sizeof(int), &source);
-    HANDLE_EXCEPTION();
-
-    sink_read_constructor(out, sizeof(int), sizeof(out) / sizeof(int), &sink);
-
-    assert(mid.size >= source_sink_min(&source));
-    assert(mid.size >= sink_source_min(&sink));
-
-    source_set_sink(&mid, &source);
-    sink_set_source(&mid, &sink);
-
-    while(!source_end(&source) && !sink_end(&sink))
+    //Write and read
     {
-        if(!buffer_readable(&mid))
+        //Base64
         {
-            buffer_reset(&mid);
+            char buf[sizeof(msg) + 8];
+
+            source_write in;
+            sink_read out;
+
+            controller ctl;
+
+            source_write_constructor(msg, sizeof(int), sizeof(msg) / sizeof(int), &in);
+            HANDLE_EXCEPTION();
+            sink_read_constructor(buf, sizeof(int), sizeof(buf) / sizeof(int), &out);
+            HANDLE_EXCEPTION();
+
+            controller_constructor(&ctl);
+            HANDLE_EXCEPTION();
+
+            controller_set_source((source*)&in, &ctl);
+            HANDLE_EXCEPTION();
+            controller_set_sink((sink*)&out, &ctl);
+            HANDLE_EXCEPTION();
+
+            controller_finalize(&ctl);
+            HANDLE_EXCEPTION();
+
+            assert(source_write_get_result(&in) == sizeof(msg) / sizeof(*msg));
+            assert(sink_read_get_result(&out) == sizeof(msg) / sizeof(*msg));
+            assert(memcmp(buf, msg, sizeof(msg)) == 0);
+
+            controller_destructor(&ctl);
+            source_destructor((source*)&in);
+            sink_destructor((sink*)&out);
         }
-        source_send(&source);
-        HANDLE_EXCEPTION();
-        sink_send(&sink);
-        HANDLE_EXCEPTION();
     }
-    assert(!sink_end(&sink));
-    while(buffer_readable(&mid) && !sink_end(&sink))
-    {
-        sink_send(&sink);
-        HANDLE_EXCEPTION();
-    }
-    assert(strcmp(msg, out) == 0);
-    assert(source_write_get_result(&source) == sizeof(msg) / sizeof(*msg));
-    assert(sink_read_get_result(&sink) == sizeof(msg) / sizeof(*msg));
-    source_destructor(&source);
-    sink_destructor(&sink);
-    buffer_destructor(&mid);
+
     return 0;
 }

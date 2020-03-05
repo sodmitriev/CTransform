@@ -1,4 +1,6 @@
-#include <buffer/buffer.h>
+#include <controller.h>
+#include <read_write/source_write.h>
+#include <read_write/sink_read.h>
 #include <CEasyException/exception.h>
 #include "transformation_encrypt.h"
 #include "transformation_decrypt.h"
@@ -40,120 +42,87 @@ int main()
 
     //Encrypt -> Decrypt
     {
-        buffer in;
-        buffer mid;
-        buffer out;
+        char buf[sizeof(msg) + 8];
+
+        source_write in;
         transformation_encrypt encrypt;
         transformation_decrypt decrypt;
+        sink_read out;
 
-        buffer_constructor(sizeof(msg), &in);
+        controller ctl;
+
+        source_write_constructor(msg, 1, sizeof(msg), &in);
         HANDLE_EXCEPTION();
-        buffer_constructor(64, &mid);
-        HANDLE_EXCEPTION();
-        buffer_constructor(sizeof(msg) + 128, &out);
-        HANDLE_EXCEPTION();
-
-        memcpy(in.buf, msg, sizeof(msg));
-        in.wpos = sizeof(msg);
-
-
         transformation_encrypt_constructor("aes-256-cbc", "sha1", "mykey", &encrypt);
         HANDLE_EXCEPTION();
         transformation_decrypt_constructor("aes-256-cbc", "sha1", "mykey", &decrypt);
         HANDLE_EXCEPTION();
-
-        assert(buffer_size(&in) >= transformation_source_min((transformation*)&encrypt));
-        assert(buffer_size(&mid) >= transformation_sink_min((transformation*)&encrypt));
-        assert(buffer_size(&mid) >= transformation_source_min((transformation*)&decrypt));
-        assert(buffer_size(&out) >= transformation_sink_min((transformation*)&decrypt));
-
-        transformation_set_source(&in, (transformation*)&encrypt);
-        transformation_set_sink(&mid, (transformation*)&encrypt);
-        transformation_set_source(&mid, (transformation*)&decrypt);
-        transformation_set_sink(&out, (transformation*)&decrypt);
-
-        while ((buffer_readable(&in) || buffer_readable(&mid)) && buffer_writable(&out))
-        {
-            if (!buffer_readable(&in))
-            {
-                buffer_reset(&in);
-            }
-            if (!buffer_readable(&mid))
-            {
-                buffer_reset(&mid);
-            }
-            if (buffer_write_size(&mid) >= transformation_sink_min((transformation*)&encrypt))
-            {
-                transformation_transform((transformation*)&encrypt);
-                HANDLE_EXCEPTION();
-            }
-            assert(buffer_write_size(&out) >= transformation_sink_min((transformation*)&decrypt));
-            transformation_transform((transformation*)&decrypt);
-            HANDLE_EXCEPTION();
-        }
-        assert(buffer_write_size(&mid) >= transformation_sink_min((transformation*)&encrypt));
-        transformation_finalize((transformation*)&encrypt);
+        sink_read_constructor(buf, 1, sizeof(buf), &out);
         HANDLE_EXCEPTION();
-        while (buffer_readable(&mid) && buffer_writable(&out))
-        {
-            if (!buffer_readable(&mid))
-            {
-                buffer_reset(&mid);
-            }
-            assert(buffer_write_size(&out) >= transformation_sink_min((transformation*)&decrypt));
-            transformation_transform((transformation*)&decrypt);
-            HANDLE_EXCEPTION();
-        }
-        transformation_finalize((transformation*)&decrypt);
+
+        controller_constructor(&ctl);
         HANDLE_EXCEPTION();
-        assert(strcmp(msg, out.buf) == 0);
-        assert(out.wpos == sizeof(msg));
+
+        controller_set_source((source*)&in, &ctl);
+        HANDLE_EXCEPTION();
+        controller_add_transformation((transformation*)&encrypt, &ctl);
+        HANDLE_EXCEPTION();
+        controller_add_transformation((transformation*)&decrypt, &ctl);
+        HANDLE_EXCEPTION();
+        controller_set_sink((sink*)&out, &ctl);
+        HANDLE_EXCEPTION();
+
+        controller_finalize(&ctl);
+        HANDLE_EXCEPTION();
+
+        assert(sink_read_get_result(&out) == sizeof(msg));
+        assert(strcmp(buf, msg) == 0);
+
+        controller_destructor(&ctl);
+        source_destructor((source*)&in);
         transformation_destructor((transformation*)&encrypt);
         transformation_destructor((transformation*)&decrypt);
-        buffer_destructor(&in);
-        buffer_destructor(&mid);
-        buffer_destructor(&out);
+        sink_destructor((sink*)&out);
     }
 
     //Hash
     {
-        buffer in;
-        buffer out;
+        char buf[sizeof(hash_val) + 8];
+
+        source_write in;
         transformation_hash hash;
+        sink_read out;
 
-        buffer_constructor(sizeof(msg), &in);
+        controller ctl;
+
+        //sizeof(msg) - 1 to avoid hashing '\0'
+        source_write_constructor(msg, 1, sizeof(msg) - 1, &in);
         HANDLE_EXCEPTION();
-        buffer_constructor(64, &out);
-        HANDLE_EXCEPTION();
-
-        memcpy(buffer_wpos(&in), msg, sizeof(msg) - 1);
-        buffer_winc(sizeof(msg) - 1, &in);
-
         transformation_hash_constructor("sha1", &hash);
         HANDLE_EXCEPTION();
-
-        transformation_set_source(&in, (transformation*)&hash);
-        transformation_set_sink(&out, (transformation*)&hash);
-
-        while(buffer_readable(&in))
-        {
-            assert(buffer_size(&in) >= transformation_source_min((transformation*)&hash));
-            assert(buffer_size(&out) >= transformation_sink_min((transformation*)&hash));
-            transformation_transform((transformation*)&hash);
-            HANDLE_EXCEPTION();
-        }
-
-        assert(buffer_size(&out) >= transformation_sink_min((transformation*)&hash));
-
-        transformation_finalize((transformation*)&hash);
+        sink_read_constructor(buf, 1, sizeof(buf), &out);
         HANDLE_EXCEPTION();
 
-        assert(buffer_read_size(&out) == sizeof(hash_val));
-        assert(memcmp(buffer_rpos(&out), hash_val, sizeof(hash_val)) == 0);
+        controller_constructor(&ctl);
+        HANDLE_EXCEPTION();
 
+        controller_set_source((source*)&in, &ctl);
+        HANDLE_EXCEPTION();
+        controller_add_transformation((transformation*)&hash, &ctl);
+        HANDLE_EXCEPTION();
+        controller_set_sink((sink*)&out, &ctl);
+        HANDLE_EXCEPTION();
+
+        controller_finalize(&ctl);
+        HANDLE_EXCEPTION();
+
+        assert(sink_read_get_result(&out) == sizeof(hash_val));
+        assert(memcmp(buf, hash_val, sizeof(hash_val)) == 0);
+
+        controller_destructor(&ctl);
+        source_destructor((source*)&in);
         transformation_destructor((transformation*)&hash);
-        buffer_destructor(&in);
-        buffer_destructor(&out);
+        sink_destructor((sink*)&out);
     }
 
     return 0;

@@ -5,4 +5,5 @@ add_library(transformation_remove transformation_remove.h transformation_remove.
 target_link_libraries(transformation_remove transformation)
 
 add_executable(transformation_util_test test.c)
-target_link_libraries(transformation_util_test transformation_replace transformation_remove)
+target_link_libraries(transformation_util_test transformation_replace transformation_remove
+                      controller source_write sink_read)

@@ -1,3 +1,6 @@
+#include <controller.h>
+#include <read_write/source_write.h>
+#include <read_write/sink_read.h>
 #include "transformation_replace.h"
 #include "transformation_remove.h"
 #include <stdlib.h>
@@ -35,92 +38,98 @@ int main()
 
     //Replace
     {
-        buffer in;
-        buffer out;
+        char buf[sizeof(msg) + 8];
+
+        source_write in;
         transformation_replace replace;
+        sink_read out;
 
-        buffer_constructor(sizeof(msg), &in);
+        controller ctl;
+
+        source_write_constructor(msg, 1, sizeof(msg), &in);
         HANDLE_EXCEPTION();
-
-        buffer_constructor(sizeof(msg) + 1, &out);
-        HANDLE_EXCEPTION();
-
-        memcpy(buffer_wpos(&in), msg, sizeof(msg));
-        buffer_winc(sizeof(msg), &in);
-
         transformation_replace_constructor("0267", 4, ' ', &replace);
         HANDLE_EXCEPTION();
-
-        transformation_set_source(&in, (transformation*)&replace);
-        transformation_set_sink(&out, (transformation*)&replace);
-
-        while(buffer_readable(&in))
-        {
-            transformation_transform((transformation*)&replace);
-            HANDLE_EXCEPTION();
-        }
-        transformation_finalize((transformation*)&replace);
+        sink_read_constructor(buf, 1, sizeof(buf), &out);
         HANDLE_EXCEPTION();
-        assert(sizeof(msg) == buffer_read_size(&out));
+
+        controller_constructor(&ctl);
+        HANDLE_EXCEPTION();
+
+        controller_set_source((source*)&in, &ctl);
+        HANDLE_EXCEPTION();
+        controller_add_transformation((transformation*)&replace, &ctl);
+        HANDLE_EXCEPTION();
+        controller_set_sink((sink*)&out, &ctl);
+        HANDLE_EXCEPTION();
+
+        controller_finalize(&ctl);
+        HANDLE_EXCEPTION();
+
+        assert(sink_read_get_result(&out) == sizeof(msg));
         for(size_t i = 0; i < sizeof(msg); ++i)
         {
             if(msg[i] == '0' || msg[i] == '2' || msg[i] == '6' || msg[i] == '7')
             {
-                assert(buffer_rpos(&out)[i] == ' ');
+                assert(buf[i] == ' ');
             }
             else
             {
-                assert(buffer_rpos(&out)[i] == msg[i]);
+                assert(buf[i] == msg[i]);
             }
         }
 
+        controller_destructor(&ctl);
+        source_destructor((source*)&in);
         transformation_destructor((transformation*)&replace);
-        buffer_destructor(&in);
-        buffer_destructor(&out);
+        sink_destructor((sink*)&out);
     }
 
     //Remove
     {
-        buffer in;
-        buffer out;
+        char buf[sizeof(msg) + 8];
+
+        source_write in;
         transformation_remove remove;
+        sink_read out;
 
-        buffer_constructor(sizeof(msg), &in);
+        controller ctl;
+
+        source_write_constructor(msg, 1, sizeof(msg), &in);
         HANDLE_EXCEPTION();
-
-        buffer_constructor(sizeof(msg) + 1, &out);
-        HANDLE_EXCEPTION();
-
-        memcpy(buffer_wpos(&in), msg, sizeof(msg));
-        buffer_winc(sizeof(msg), &in);
-
         transformation_remove_constructor("0267", 4, &remove);
         HANDLE_EXCEPTION();
-
-        transformation_set_source(&in, (transformation*)&remove);
-        transformation_set_sink(&out, (transformation*)&remove);
-
-        while(buffer_readable(&in))
-        {
-            transformation_transform((transformation*)&remove);
-            HANDLE_EXCEPTION();
-        }
-        transformation_finalize((transformation*)&remove);
+        sink_read_constructor(buf, 1, sizeof(buf), &out);
         HANDLE_EXCEPTION();
-        assert(sizeof(msg) - 64 == buffer_read_size(&out));
+
+        controller_constructor(&ctl);
+        HANDLE_EXCEPTION();
+
+        controller_set_source((source*)&in, &ctl);
+        HANDLE_EXCEPTION();
+        controller_add_transformation((transformation*)&remove, &ctl);
+        HANDLE_EXCEPTION();
+        controller_set_sink((sink*)&out, &ctl);
+        HANDLE_EXCEPTION();
+
+        controller_finalize(&ctl);
+        HANDLE_EXCEPTION();
+
+        assert(sink_read_get_result(&out) == sizeof(msg) - 64);
         size_t out_i = 0;
         for(size_t i = 0; i < sizeof(msg); ++i)
         {
             if(msg[i] != '0' && msg[i] != '2' && msg[i] != '6' && msg[i] != '7')
             {
-                assert(buffer_rpos(&out)[out_i] == msg[i]);
+                assert(buf[out_i] == msg[i]);
                 ++out_i;
             }
         }
 
+        controller_destructor(&ctl);
+        source_destructor((source*)&in);
         transformation_destructor((transformation*)&remove);
-        buffer_destructor(&in);
-        buffer_destructor(&out);
+        sink_destructor((sink*)&out);
     }
 
     return 0;

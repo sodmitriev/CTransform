@@ -25,9 +25,9 @@ add_library(controller controller.h controller.c)
 target_link_libraries(controller sink source transformation)
 
 add_subdirectory(read_write)
+add_subdirectory(util)
 add_subdirectory(crypto)
 add_subdirectory(encode)
-add_subdirectory(util)
 
 add_executable(controller_test controller_test.c)
 target_link_libraries(controller_test controller transformation_encrypt transformation_decrypt sink_read source_write)
