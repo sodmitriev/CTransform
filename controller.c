@@ -15,14 +15,12 @@
 typedef struct controller_buffer_node
 {
     buffer buffer;
-    struct controller_transformation_node *prev;
     struct controller_transformation_node *next;
 } controller_buffer_node;
 
 typedef struct controller_transformation_node
 {
     transformation *transform;
-    struct controller_buffer_node *prev;
     struct controller_buffer_node *next;
 } controller_transformation_node;
 
@@ -40,7 +38,6 @@ void controller_constructor(controller *this)
         return;
     }
     node->next = NULL;
-    node->prev = NULL;
     //Possible ENOMEM exception
     buffer_constructor(CONTROLLER_BUF_MIN_SIZE, &node->buffer);
     if(EXCEPTION_IS_THROWN)
@@ -62,15 +59,12 @@ void controller_destructor(controller *this)
         controller_transformation_node *next = node->next->next;
         buffer_destructor(&node->next->buffer);
         node->next->next = NULL;
-        node->next->prev = NULL;
         free(node->next);
-        node->prev = NULL;
         node->next = NULL;
         free(node);
         node = next;
     }
     buffer_destructor(&this->first->buffer);
-    this->first->prev = NULL;
     this->first->next = NULL;
     free(this->first);
     this->first = NULL;
@@ -98,10 +92,8 @@ void controller_add_transformation(transformation *transform, controller *this)
         free(buf_node);
         return;
     }
-    trans_node->prev = this->last;
     trans_node->transform = transform;
     trans_node->next = buf_node;
-    buf_node->prev = trans_node;
     buf_node->next = NULL;
     this->last->next = trans_node;
     this->last = buf_node;
