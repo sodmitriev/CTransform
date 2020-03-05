@@ -12,7 +12,7 @@ typedef struct
     size_t cnt;
 } source_write;
 
-extern void source_write_constructor(const void *ptr, size_t size, size_t nmemb, source_write *this);
+extern void source_write_constructor(source_write *this);
 
 extern void source_write_destructor(source_write *this);
 
@@ -21,6 +21,8 @@ extern size_t source_write_send(source_write *this);
 extern size_t source_write_sink_min(source_write *this);
 
 extern bool source_write_end(const source_write *this);
+
+extern void source_write_set(const void *ptr, size_t size, size_t nmemb, source_write *this);
 
 extern size_t source_write_get_result(const source_write *this);
 

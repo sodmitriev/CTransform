@@ -43,9 +43,9 @@ int main()
 
             controller ctl;
 
-            source_write_constructor(msg, sizeof(int), sizeof(msg) / sizeof(int), &in);
+            source_write_constructor(&in);
             HANDLE_EXCEPTION();
-            sink_read_constructor(buf, sizeof(int), sizeof(buf) / sizeof(int), &out);
+            sink_read_constructor(&out);
             HANDLE_EXCEPTION();
 
             controller_constructor(&ctl);
@@ -55,6 +55,9 @@ int main()
             HANDLE_EXCEPTION();
             controller_set_sink((sink *)&out, &ctl);
             HANDLE_EXCEPTION();
+
+            source_write_set(msg, sizeof(int), sizeof(msg) / sizeof(int), &in);
+            sink_read_set(buf, sizeof(int), sizeof(buf) / sizeof(int), &out);
 
             controller_finalize(&ctl);
             HANDLE_EXCEPTION();

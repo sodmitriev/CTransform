@@ -47,13 +47,13 @@ int main()
 
         controller ctl;
 
-        source_write_constructor(msg, 1, sizeof(msg), &in);
+        source_write_constructor(&in);
         HANDLE_EXCEPTION();
         transformation_b64_encode_constructor(&encode);
         HANDLE_EXCEPTION();
         transformation_b64_decode_constructor(&decode);
         HANDLE_EXCEPTION();
-        sink_read_constructor(buf, 1, sizeof(buf), &out);
+        sink_read_constructor(&out);
         HANDLE_EXCEPTION();
 
         controller_constructor(&ctl);
@@ -67,6 +67,9 @@ int main()
         HANDLE_EXCEPTION();
         controller_set_sink((sink *)&out, &ctl);
         HANDLE_EXCEPTION();
+
+        source_write_set(msg, 1, sizeof(msg), &in);
+        sink_read_set(buf, 1, sizeof(buf), &out);
 
         controller_finalize(&ctl);
         HANDLE_EXCEPTION();

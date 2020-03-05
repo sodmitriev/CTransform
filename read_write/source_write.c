@@ -9,14 +9,10 @@ source_call_tab source_call_tab_write =
                 .end         = (bool (*)(const source *))source_write_end
         };
 
-void source_write_constructor(const void *ptr, size_t size, size_t nmemb, source_write *this)
+void source_write_constructor(source_write *this)
 {
     this->base.call_tab = &source_call_tab_write;
     this->base.sink = NULL;
-    this->ptr = ptr;
-    this->size = size;
-    this->nmemb = nmemb;
-    this->cnt = 0;
 }
 
 void source_write_destructor(source_write *this)
@@ -47,6 +43,14 @@ size_t source_write_sink_min(source_write *this)
 bool source_write_end(const source_write *this)
 {
     return this->cnt >= this->nmemb;
+}
+
+void source_write_set(const void *ptr, size_t size, size_t nmemb, source_write *this)
+{
+    this->ptr = ptr;
+    this->size = size;
+    this->nmemb = nmemb;
+    this->cnt = 0;
 }
 
 size_t source_write_get_result(const source_write *this)

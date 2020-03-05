@@ -48,13 +48,13 @@ int main()
 
         controller ctl;
 
-        source_write_constructor(msg, 1, sizeof(msg), &in);
+        source_write_constructor(&in);
         HANDLE_EXCEPTION();
         transformation_encrypt_constructor("aes-256-cbc", "sha1", "mykey", &encrypt);
         HANDLE_EXCEPTION();
         transformation_decrypt_constructor("aes-256-cbc", "sha1", "mykey", &decrypt);
         HANDLE_EXCEPTION();
-        sink_read_constructor(buf, 1, sizeof(buf), &out);
+        sink_read_constructor(&out);
         HANDLE_EXCEPTION();
 
         controller_constructor(&ctl);
@@ -68,6 +68,9 @@ int main()
         HANDLE_EXCEPTION();
         controller_set_sink((sink *)&out, &ctl);
         HANDLE_EXCEPTION();
+
+        source_write_set(msg, 1, sizeof(msg), &in);
+        sink_read_set(buf, 1, sizeof(buf), &out);
 
         controller_finalize(&ctl);
         HANDLE_EXCEPTION();
@@ -95,11 +98,13 @@ int main()
 
         controller ctl;
 
-        source_write_constructor(msg, 1, sizeof(msg), &in);
+        source_write_constructor(&in);
         HANDLE_EXCEPTION();
         transformation_encrypt_constructor("aes-256-cbc", "sha1", "mykey", &encrypt);
         HANDLE_EXCEPTION();
         transformation_decrypt_constructor("aes-256-cbc", "sha1", "mykey", &decrypt);
+        HANDLE_EXCEPTION();
+        sink_read_constructor(&out);
         HANDLE_EXCEPTION();
 
         controller_constructor(&ctl);
@@ -114,12 +119,13 @@ int main()
         controller_set_sink((sink *)&out, &ctl);
         HANDLE_EXCEPTION();
 
+        source_write_set(msg, 1, sizeof(msg), &in);
+
         size_t chunk = 0;
 
         while(chunk < CHUNK_NUM)
         {
-            sink_read_constructor(buf + chunk * chunk_size, 1, chunk_size, &out);
-            HANDLE_EXCEPTION();
+            sink_read_set(buf + chunk * chunk_size, 1, chunk_size, &out);
 
             controller_finalize(&ctl);
             HANDLE_EXCEPTION();
@@ -129,11 +135,9 @@ int main()
             assert(sink_read_get_result(&out) == chunk_size);
 
             ++chunk;
-            sink_read_destructor(&out);
         }
 
-        sink_read_constructor(buf + chunk * chunk_size, 1, sizeof(msg) % chunk_size, &out);
-        HANDLE_EXCEPTION();
+        sink_read_set(buf + chunk * chunk_size, 1, sizeof(msg) % chunk_size, &out);
 
         controller_finalize(&ctl);
         HANDLE_EXCEPTION();
@@ -162,11 +166,14 @@ int main()
 
         controller ctl;
 
+        source_write_constructor(&in);
+        HANDLE_EXCEPTION();
         transformation_encrypt_constructor("aes-256-cbc", "sha1", "mykey", &encrypt);
         HANDLE_EXCEPTION();
         transformation_decrypt_constructor("aes-256-cbc", "sha1", "mykey", &decrypt);
         HANDLE_EXCEPTION();
-        sink_read_constructor(buf, 1, sizeof(msg), &out);
+        sink_read_constructor(&out);
+        HANDLE_EXCEPTION();
 
         controller_constructor(&ctl);
         HANDLE_EXCEPTION();
@@ -180,12 +187,13 @@ int main()
         controller_set_sink((sink *)&out, &ctl);
         HANDLE_EXCEPTION();
 
+        sink_read_set(buf, 1, sizeof(msg), &out);
+
         size_t chunk = 0;
 
         while(chunk < CHUNK_NUM)
         {
-            source_write_constructor(msg + chunk * chunk_size, 1, chunk_size, &in);
-            HANDLE_EXCEPTION();
+            source_write_set(msg + chunk * chunk_size, 1, chunk_size, &in);
 
             controller_work(&ctl);
             HANDLE_EXCEPTION();
@@ -194,11 +202,9 @@ int main()
             assert(!sink_end((sink *)&out));
 
             ++chunk;
-            source_write_destructor(&in);
         }
 
-        source_write_constructor(msg + chunk * chunk_size, 1, sizeof(msg) % chunk_size, &in);
-        HANDLE_EXCEPTION();
+        source_write_set(msg + chunk * chunk_size, 1, sizeof(msg) % chunk_size, &in);
 
         controller_finalize(&ctl);
         HANDLE_EXCEPTION();

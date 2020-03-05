@@ -52,13 +52,13 @@ int main()
 
         controller ctl;
 
-        source_write_constructor(msg, 1, sizeof(msg), &in);
+        source_write_constructor(&in);
         HANDLE_EXCEPTION();
         transformation_encrypt_constructor("aes-256-cbc", "sha1", "mykey", &encrypt);
         HANDLE_EXCEPTION();
         transformation_decrypt_constructor("aes-256-cbc", "sha1", "mykey", &decrypt);
         HANDLE_EXCEPTION();
-        sink_read_constructor(buf, 1, sizeof(buf), &out);
+        sink_read_constructor(&out);
         HANDLE_EXCEPTION();
 
         controller_constructor(&ctl);
@@ -72,6 +72,9 @@ int main()
         HANDLE_EXCEPTION();
         controller_set_sink((sink *)&out, &ctl);
         HANDLE_EXCEPTION();
+
+        source_write_set(msg, 1, sizeof(msg), &in);
+        sink_read_set(buf, 1, sizeof(buf), &out);
 
         controller_finalize(&ctl);
         HANDLE_EXCEPTION();
@@ -96,12 +99,11 @@ int main()
 
         controller ctl;
 
-        //sizeof(msg) - 1 to avoid hashing '\0'
-        source_write_constructor(msg, 1, sizeof(msg) - 1, &in);
+        source_write_constructor(&in);
         HANDLE_EXCEPTION();
         transformation_hash_constructor("sha1", &hash);
         HANDLE_EXCEPTION();
-        sink_read_constructor(buf, 1, sizeof(buf), &out);
+        sink_read_constructor(&out);
         HANDLE_EXCEPTION();
 
         controller_constructor(&ctl);
@@ -113,6 +115,10 @@ int main()
         HANDLE_EXCEPTION();
         controller_set_sink((sink *)&out, &ctl);
         HANDLE_EXCEPTION();
+
+        //sizeof(msg) - 1 to avoid hashing '\0'
+        source_write_set(msg, 1, sizeof(msg) - 1, &in);
+        sink_read_set(buf, 1, sizeof(buf), &out);
 
         controller_finalize(&ctl);
         HANDLE_EXCEPTION();
