@@ -7,6 +7,8 @@ set(CMAKE_C_FLAGS "-Wall -Wextra -Wpedantic -Wcast-align -Wcast-qual -Wconversio
 set(CMAKE_C_FLAGS_DEBUG "-g -O0 ${CMAKE_C_FLAGS_DEBUG}")
 set(CMAKE_C_FLAGS_RELEASE "-O3 -DNDEBUG ${CMAKE_C_FLAGS_RELEASE}")
 
+enable_testing()
+
 add_subdirectory(CEasyException)
 include_directories(.)
 
@@ -31,3 +33,5 @@ add_subdirectory(encode)
 
 add_executable(controller_test controller_test.c)
 target_link_libraries(controller_test controller transformation_encrypt transformation_decrypt sink_read source_write)
+
+add_test(controller_test controller_test)

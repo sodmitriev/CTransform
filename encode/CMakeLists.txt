@@ -11,3 +11,5 @@ target_link_libraries(transformation_b64_decode transformation ${OPENSSL_LIBRARI
 add_executable(transformation_b64_test test.c)
 target_link_libraries(transformation_b64_test transformation_b64_encode transformation_b64_decode
                       controller source_write sink_read)
+
+add_test(transformation_b64_test transformation_b64_test)

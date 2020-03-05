@@ -9,3 +9,5 @@ target_link_libraries(sink_getc sink)
 
 add_executable(read_write_test test.c)
 target_link_libraries(read_write_test sink_read source_write sink_getc controller)
+
+add_test(read_write_test read_write_test)

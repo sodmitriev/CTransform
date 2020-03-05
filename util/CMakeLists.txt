@@ -7,3 +7,5 @@ target_link_libraries(transformation_remove transformation)
 add_executable(transformation_util_test test.c)
 target_link_libraries(transformation_util_test transformation_replace transformation_remove
                       controller source_write sink_read)
+
+add_test(transformation_util_test transformation_util_test)

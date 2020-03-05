@@ -15,3 +15,5 @@ target_link_libraries(transformation_hash transformation ${OPENSSL_LIBRARIES})
 add_executable(transformation_crypto_test test.c)
 target_link_libraries(transformation_crypto_test transformation_encrypt transformation_decrypt transformation_hash
                       controller sink_read source_write)
+
+add_test(transformation_crypto_test transformation_crypto_test)
