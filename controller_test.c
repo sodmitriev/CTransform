@@ -60,13 +60,13 @@ int main()
         controller_constructor(&ctl);
         HANDLE_EXCEPTION();
 
-        controller_set_source((source*)&in, &ctl);
+        controller_set_source((source *)&in, &ctl);
         HANDLE_EXCEPTION();
-        controller_add_transformation((transformation*)&encrypt, &ctl);
+        controller_add_transformation((transformation *)&encrypt, &ctl);
         HANDLE_EXCEPTION();
-        controller_add_transformation((transformation*)&decrypt, &ctl);
+        controller_add_transformation((transformation *)&decrypt, &ctl);
         HANDLE_EXCEPTION();
-        controller_set_sink((sink*)&out, &ctl);
+        controller_set_sink((sink *)&out, &ctl);
         HANDLE_EXCEPTION();
 
         controller_finalize(&ctl);
@@ -76,10 +76,10 @@ int main()
         assert(strcmp(buf, msg) == 0);
 
         controller_destructor(&ctl);
-        source_destructor((source*)&in);
-        transformation_destructor((transformation*)&encrypt);
-        transformation_destructor((transformation*)&decrypt);
-        sink_destructor((sink*)&out);
+        source_destructor((source *)&in);
+        transformation_destructor((transformation *)&encrypt);
+        transformation_destructor((transformation *)&decrypt);
+        sink_destructor((sink *)&out);
 
     }
 
@@ -105,13 +105,13 @@ int main()
         controller_constructor(&ctl);
         HANDLE_EXCEPTION();
 
-        controller_set_source((source*)&in, &ctl);
+        controller_set_source((source *)&in, &ctl);
         HANDLE_EXCEPTION();
-        controller_add_transformation((transformation*)&encrypt, &ctl);
+        controller_add_transformation((transformation *)&encrypt, &ctl);
         HANDLE_EXCEPTION();
-        controller_add_transformation((transformation*)&decrypt, &ctl);
+        controller_add_transformation((transformation *)&decrypt, &ctl);
         HANDLE_EXCEPTION();
-        controller_set_sink((sink*)&out, &ctl);
+        controller_set_sink((sink *)&out, &ctl);
         HANDLE_EXCEPTION();
 
         size_t chunk = 0;
@@ -124,7 +124,7 @@ int main()
             controller_finalize(&ctl);
             HANDLE_EXCEPTION();
 
-            assert(sink_end((sink*)&out));
+            assert(sink_end((sink *)&out));
 
             assert(sink_read_get_result(&out) == chunk_size);
 
@@ -138,16 +138,16 @@ int main()
         controller_finalize(&ctl);
         HANDLE_EXCEPTION();
 
-        assert(source_end((source*)&in));
-        assert(sink_end((sink*)&out));
+        assert(source_end((source *)&in));
+        assert(sink_end((sink *)&out));
         assert(sink_read_get_result(&out) == sizeof(msg) % chunk_size);
         assert(memcmp(buf, msg, sizeof(msg)) == 0);
 
         controller_destructor(&ctl);
-        source_destructor((source*)&in);
-        transformation_destructor((transformation*)&encrypt);
-        transformation_destructor((transformation*)&decrypt);
-        sink_destructor((sink*)&out);
+        source_destructor((source *)&in);
+        transformation_destructor((transformation *)&encrypt);
+        transformation_destructor((transformation *)&decrypt);
+        sink_destructor((sink *)&out);
     }
 
     //Write by chunk, read whole
@@ -171,13 +171,13 @@ int main()
         controller_constructor(&ctl);
         HANDLE_EXCEPTION();
 
-        controller_set_source((source*)&in, &ctl);
+        controller_set_source((source *)&in, &ctl);
         HANDLE_EXCEPTION();
-        controller_add_transformation((transformation*)&encrypt, &ctl);
+        controller_add_transformation((transformation *)&encrypt, &ctl);
         HANDLE_EXCEPTION();
-        controller_add_transformation((transformation*)&decrypt, &ctl);
+        controller_add_transformation((transformation *)&decrypt, &ctl);
         HANDLE_EXCEPTION();
-        controller_set_sink((sink*)&out, &ctl);
+        controller_set_sink((sink *)&out, &ctl);
         HANDLE_EXCEPTION();
 
         size_t chunk = 0;
@@ -190,8 +190,8 @@ int main()
             controller_work(&ctl);
             HANDLE_EXCEPTION();
 
-            assert(source_end((source*)&in));
-            assert(!sink_end((sink*)&out));
+            assert(source_end((source *)&in));
+            assert(!sink_end((sink *)&out));
 
             ++chunk;
             source_write_destructor(&in);
@@ -203,16 +203,16 @@ int main()
         controller_finalize(&ctl);
         HANDLE_EXCEPTION();
 
-        assert(source_end((source*)&in));
-        assert(sink_end((sink*)&out));
+        assert(source_end((source *)&in));
+        assert(sink_end((sink *)&out));
         assert(sink_read_get_result(&out) == sizeof(msg));
         assert(memcmp(buf, msg, sizeof(msg)) == 0);
 
         controller_destructor(&ctl);
-        source_destructor((source*)&in);
-        transformation_destructor((transformation*)&encrypt);
-        transformation_destructor((transformation*)&decrypt);
-        sink_destructor((sink*)&out);
+        source_destructor((source *)&in);
+        transformation_destructor((transformation *)&encrypt);
+        transformation_destructor((transformation *)&decrypt);
+        sink_destructor((sink *)&out);
     }
 
     return 0;

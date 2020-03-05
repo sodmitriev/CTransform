@@ -9,18 +9,18 @@ static const unsigned char salt[] = {37, 82, 152, 215, 173, 161, 143, 54};
 
 transformation_call_tab transformation_call_tab_decrypt =
         {
-                .destructor = (void (*)(transformation *)) transformation_decrypt_destructor,
-                .transform = (void (*)(transformation *)) transformation_decrypt_transform,
-                .finalize = (void (*)(transformation *)) transformation_decrypt_finalize,
-                .sink_min = (size_t (*)(const transformation *)) transformation_decrypt_sink_min,
-                .source_min = (size_t (*)(const transformation *)) transformation_decrypt_source_min
+                .destructor = (void (*)(transformation *))transformation_decrypt_destructor,
+                .transform = (void (*)(transformation *))transformation_decrypt_transform,
+                .finalize = (void (*)(transformation *))transformation_decrypt_finalize,
+                .sink_min = (size_t (*)(const transformation *))transformation_decrypt_sink_min,
+                .source_min = (size_t (*)(const transformation *))transformation_decrypt_source_min
         };
 
-void transformation_decrypt_constructor(const char* cipher, const char* digest, const char* key,
-                                        transformation_decrypt* this)
+void transformation_decrypt_constructor(const char *cipher, const char *digest, const char *key,
+                                        transformation_decrypt *this)
 {
-    const EVP_CIPHER* ciph = EVP_get_cipherbyname(cipher);
-    const EVP_MD* md = EVP_get_digestbyname(digest);
+    const EVP_CIPHER *ciph = EVP_get_cipherbyname(cipher);
+    const EVP_MD *md = EVP_get_digestbyname(digest);
 
     if(ciph == NULL)
     {
@@ -46,22 +46,22 @@ void transformation_decrypt_constructor(const char* cipher, const char* digest, 
         return;
     }
 
-    unsigned char* raw_key = malloc((size_t)key_size);
-    unsigned char* iv = malloc((size_t)iv_size);
+    unsigned char *raw_key = malloc((size_t)key_size);
+    unsigned char *iv = malloc((size_t)iv_size);
     if(!raw_key || !iv)
     {
         EXCEPTION_THROW_NOMSG(ENOMEM);
         goto transformation_decrypt_constructor_cleanup;
     }
 
-    EVP_CIPHER_CTX* ctx = EVP_CIPHER_CTX_new();
+    EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
     if(!ctx)
     {
         EXCEPTION_THROW_NOMSG(ENOMEM);
         goto transformation_decrypt_constructor_cleanup;
     }
 
-    if (EVP_BytesToKey(ciph, md, salt, (const unsigned char*)key, (int)key_len, 3, raw_key, iv) != key_size)
+    if(EVP_BytesToKey(ciph, md, salt, (const unsigned char *)key, (int)key_len, 3, raw_key, iv) != key_size)
     {
         EXCEPTION_THROW(ENOANO, "%s", "Failed to initialize key");
         goto transformation_decrypt_constructor_cleanup_ctx;
@@ -80,29 +80,30 @@ void transformation_decrypt_constructor(const char* cipher, const char* digest, 
     free(iv);
     return;
 
-transformation_decrypt_constructor_cleanup_ctx:
+    transformation_decrypt_constructor_cleanup_ctx:
     EVP_CIPHER_CTX_free(ctx);
-transformation_decrypt_constructor_cleanup:
+    transformation_decrypt_constructor_cleanup:
     free(raw_key);
     free(iv);
 }
 
-void transformation_decrypt_destructor(transformation_decrypt* this)
+void transformation_decrypt_destructor(transformation_decrypt *this)
 {
     EVP_CIPHER_CTX_free(this->ctx);
     this->ctx = NULL;
 }
 
-void transformation_decrypt_transform(transformation_decrypt* this)
+void transformation_decrypt_transform(transformation_decrypt *this)
 {
     int len;
-    while(buffer_write_size(this->base.sink) > transformation_decrypt_sink_min(this) && buffer_readable(this->base.source))
+    while(buffer_write_size(this->base.sink) > transformation_decrypt_sink_min(this) &&
+          buffer_readable(this->base.source))
     {
         size_t num = this->block_size < buffer_read_size(this->base.source) ?
                      this->block_size : buffer_read_size(this->base.source);
         assert(num <= INT_MAX); //Because block should be smaller, as it's derived from int return of openssl
-        if ( EVP_DecryptUpdate(this->ctx, (unsigned char*)buffer_wpos(this->base.sink), &len,
-                               (const unsigned char*)buffer_rpos(this->base.source), (int)num ) != 1)
+        if(EVP_DecryptUpdate(this->ctx, (unsigned char *)buffer_wpos(this->base.sink), &len,
+                             (const unsigned char *)buffer_rpos(this->base.source), (int)num) != 1)
         {
             EXCEPTION_THROW(ENOANO, "%s", "Failed to decrypt block of data");
             return;
@@ -113,10 +114,10 @@ void transformation_decrypt_transform(transformation_decrypt* this)
     }
 }
 
-void transformation_decrypt_finalize(transformation_decrypt* this)
+void transformation_decrypt_finalize(transformation_decrypt *this)
 {
     int len;
-    if(EVP_DecryptFinal_ex(this->ctx, (unsigned char*)buffer_wpos(this->base.sink), &len) != 1)
+    if(EVP_DecryptFinal_ex(this->ctx, (unsigned char *)buffer_wpos(this->base.sink), &len) != 1)
     {
         EXCEPTION_THROW(ENOANO, "%s", "Failed to finalize decryption");
         return;
@@ -125,15 +126,17 @@ void transformation_decrypt_finalize(transformation_decrypt* this)
     buffer_winc((size_t)len, this->base.sink);
 }
 
-size_t transformation_decrypt_sink_min(const transformation_decrypt* this)
+size_t transformation_decrypt_sink_min(const transformation_decrypt *this)
 {
-    return this->block_size*2;
+    return this->block_size * 2;
 }
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
-size_t transformation_decrypt_source_min(const transformation_decrypt* this)
+
+size_t transformation_decrypt_source_min(const transformation_decrypt *this)
 {
     return 1;
 }
+
 #pragma GCC diagnostic pop

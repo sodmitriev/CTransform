@@ -5,7 +5,7 @@
 #include <assert.h>
 #include <errno.h>
 
-void buffer_constructor(size_t size, buffer* this)
+void buffer_constructor(size_t size, buffer *this)
 {
     this->wpos = 0;
     this->rpos = 0;
@@ -19,7 +19,7 @@ void buffer_constructor(size_t size, buffer* this)
     this->size = size;
 }
 
-void buffer_destructor(buffer* this)
+void buffer_destructor(buffer *this)
 {
     free(this->buf);
     this->buf = NULL;
@@ -28,67 +28,67 @@ void buffer_destructor(buffer* this)
     this->wpos = 0;
 }
 
-size_t buffer_read_size(const buffer* this)
+size_t buffer_read_size(const buffer *this)
 {
     return this->wpos - this->rpos;
 }
 
-size_t buffer_write_size(const buffer* this)
+size_t buffer_write_size(const buffer *this)
 {
     return this->size - this->wpos;
 }
 
-size_t buffer_occupied(const buffer* this)
+size_t buffer_occupied(const buffer *this)
 {
     return this->wpos;
 }
 
-bool buffer_readable(const buffer* this)
+bool buffer_readable(const buffer *this)
 {
     return buffer_read_size(this) > 0;
 }
 
-bool buffer_writable(const buffer* this)
+bool buffer_writable(const buffer *this)
 {
     return buffer_write_size(this) > 0;
 }
 
-void buffer_reset(buffer* this)
+void buffer_reset(buffer *this)
 {
     this->rpos = 0;
     this->wpos = 0;
 }
 
-char* buffer_wpos(buffer* this)
+char *buffer_wpos(buffer *this)
 {
     return this->buf + this->wpos;
 }
 
-void buffer_winc(size_t off, buffer* this)
+void buffer_winc(size_t off, buffer *this)
 {
     this->wpos += off;
     assert(this->wpos <= this->size);
 }
 
-const char* buffer_rpos(const buffer* this)
+const char *buffer_rpos(const buffer *this)
 {
     return this->buf + this->rpos;
 }
 
-void buffer_rinc(size_t off, buffer* this)
+void buffer_rinc(size_t off, buffer *this)
 {
     this->rpos += off;
     assert(this->rpos <= this->wpos);
 }
 
-size_t buffer_size(const buffer* this)
+size_t buffer_size(const buffer *this)
 {
     return this->size;
 }
 
-void buffer_resize(size_t size, buffer* this)
+void buffer_resize(size_t size, buffer *this)
 {
-    char* new_buf = realloc(this->buf, size);
+    char *new_buf = realloc(this->buf, size);
     if(!new_buf)
     {
         EXCEPTION_THROW_NOMSG(ENOMEM);
@@ -106,7 +106,7 @@ void buffer_resize(size_t size, buffer* this)
     }
 }
 
-void buffer_compact(buffer* this)
+void buffer_compact(buffer *this)
 {
     if(this->rpos == 0)
     {

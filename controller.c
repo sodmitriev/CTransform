@@ -15,25 +15,25 @@
 typedef struct controller_buffer_node
 {
     buffer buffer;
-    struct controller_transformation_node* prev;
-    struct controller_transformation_node* next;
+    struct controller_transformation_node *prev;
+    struct controller_transformation_node *next;
 } controller_buffer_node;
 
 typedef struct controller_transformation_node
 {
-    transformation* transform;
-    struct controller_buffer_node* prev;
-    struct controller_buffer_node* next;
+    transformation *transform;
+    struct controller_buffer_node *prev;
+    struct controller_buffer_node *next;
 } controller_transformation_node;
 
-void controller_constructor(controller* this)
+void controller_constructor(controller *this)
 {
     this->in = NULL;
     this->out = NULL;
     this->first = NULL;
     this->last = NULL;
     this->last_fin = NULL;
-    controller_buffer_node* node = malloc(sizeof(controller_buffer_node));
+    controller_buffer_node *node = malloc(sizeof(controller_buffer_node));
     if(!node)
     {
         EXCEPTION_THROW_NOMSG(ENOMEM);
@@ -52,14 +52,14 @@ void controller_constructor(controller* this)
     this->last = node;
 }
 
-void controller_destructor(controller* this)
+void controller_destructor(controller *this)
 {
     assert(this->first);
-    controller_transformation_node* node = this->first->next;
+    controller_transformation_node *node = this->first->next;
     while(node != NULL)
     {
         assert(node->next);
-        controller_transformation_node* next = node->next->next;
+        controller_transformation_node *next = node->next->next;
         buffer_destructor(&node->next->buffer);
         node->next->next = NULL;
         node->next->prev = NULL;
@@ -78,12 +78,12 @@ void controller_destructor(controller* this)
     this->last_fin = NULL;
 }
 
-void controller_add_transformation(transformation* transform, controller* this)
+void controller_add_transformation(transformation *transform, controller *this)
 {
     assert(this->first);
     assert(this->last);
-    controller_transformation_node* trans_node = malloc(sizeof(controller_transformation_node));
-    controller_buffer_node* buf_node = malloc(sizeof(controller_buffer_node));
+    controller_transformation_node *trans_node = malloc(sizeof(controller_transformation_node));
+    controller_buffer_node *buf_node = malloc(sizeof(controller_buffer_node));
     if(!trans_node || !buf_node)
     {
         free(trans_node);
@@ -107,17 +107,17 @@ void controller_add_transformation(transformation* transform, controller* this)
     this->last = buf_node;
 }
 
-void controller_set_source(source* in, controller* this)
+void controller_set_source(source *in, controller *this)
 {
     this->in = in;
 }
 
-void controller_set_sink(sink* out, controller* this)
+void controller_set_sink(sink *out, controller *this)
 {
     this->out = out;
 }
 
-static void adjust_buffer(size_t size, buffer* buf)
+static void adjust_buffer(size_t size, buffer *buf)
 {
     //If you have more than 9 exabyte of RAM you probably use cluster and won't use this single thread software
     assert(ULLONG_MAX / 2 > size);
@@ -138,10 +138,10 @@ static void adjust_buffer(size_t size, buffer* buf)
     }
 }
 
-static void adjust_buffers(controller* this)
+static void adjust_buffers(controller *this)
 {
     size_t prev_min = source_sink_min(this->in);
-    for(controller_buffer_node* node = this->first; node != this->last; node = node->next->next)
+    for(controller_buffer_node *node = this->first; node != this->last; node = node->next->next)
     {
         adjust_buffer(prev_min + transformation_source_min(node->next->transform), &node->buffer);
         RETHROW_EXCEPTION();
@@ -150,10 +150,10 @@ static void adjust_buffers(controller* this)
     adjust_buffer(prev_min + sink_source_min(this->out), &this->last->buffer);
 }
 
-static void link_sink_source(controller* this)
+static void link_sink_source(controller *this)
 {
     source_set_sink(&this->first->buffer, this->in);
-    for(controller_buffer_node* node = this->first; node != this->last; node = node->next->next)
+    for(controller_buffer_node *node = this->first; node != this->last; node = node->next->next)
     {
         transformation_set_source(&node->buffer, node->next->transform);
         transformation_set_sink(&node->next->next->buffer, node->next->transform);
@@ -161,16 +161,16 @@ static void link_sink_source(controller* this)
     sink_set_source(&this->last->buffer, this->out);
 }
 
-static void compact_buffers(controller_buffer_node* from, controller_buffer_node* to)
+static void compact_buffers(controller_buffer_node *from, controller_buffer_node *to)
 {
-    for(controller_buffer_node* node = from; node != to; node = node->next->next)
+    for(controller_buffer_node *node = from; node != to; node = node->next->next)
     {
         buffer_compact(&node->buffer);
     }
     buffer_compact(&to->buffer);
 }
 
-static void controller_work_source(controller* this)
+static void controller_work_source(controller *this)
 {
     while(!source_end(this->in) && buffer_write_size(&this->first->buffer) >= source_sink_min(this->in))
     {
@@ -179,9 +179,9 @@ static void controller_work_source(controller* this)
     }
 }
 
-static void controller_work_transformations(controller_buffer_node* from, controller_buffer_node* to)
+static void controller_work_transformations(controller_buffer_node *from, controller_buffer_node *to)
 {
-    for(controller_buffer_node* node = from; node != to; node = node->next->next)
+    for(controller_buffer_node *node = from; node != to; node = node->next->next)
     {
         while(buffer_read_size(&node->buffer) >= transformation_source_min(node->next->transform) &&
               buffer_write_size(&node->next->next->buffer) >= transformation_sink_min(node->next->transform))
@@ -192,7 +192,7 @@ static void controller_work_transformations(controller_buffer_node* from, contro
     }
 }
 
-static void controller_work_sink(controller* this)
+static void controller_work_sink(controller *this)
 {
     while(buffer_read_size(&this->last->buffer) >= sink_source_min(this->out) && !sink_end(this->out))
     {
@@ -201,7 +201,7 @@ static void controller_work_sink(controller* this)
     }
 }
 
-void controller_work(controller* this)
+void controller_work(controller *this)
 {
     adjust_buffers(this);
     RETHROW_EXCEPTION();
@@ -218,13 +218,13 @@ void controller_work(controller* this)
     }
 }
 
-void controller_finalize(controller* this)
+void controller_finalize(controller *this)
 {
     if(!this->last_fin)
     {
         controller_work(this);
         RETHROW_EXCEPTION();
-        if (sink_end(this->out))
+        if(sink_end(this->out))
         {
             return;
         }
@@ -255,7 +255,8 @@ void controller_finalize(controller* this)
             }
         }
         //Free enough space in this current transformation's sink
-        while(buffer_write_size(&this->last_fin->next->next->buffer) < transformation_sink_min(this->last_fin->next->transform))
+        while(buffer_write_size(&this->last_fin->next->next->buffer) <
+              transformation_sink_min(this->last_fin->next->transform))
         {
             compact_buffers(this->last_fin, this->last);
             controller_work_transformations(this->last_fin->next->next, this->last);

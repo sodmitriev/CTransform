@@ -59,13 +59,13 @@ int main()
         controller_constructor(&ctl);
         HANDLE_EXCEPTION();
 
-        controller_set_source((source*)&in, &ctl);
+        controller_set_source((source *)&in, &ctl);
         HANDLE_EXCEPTION();
-        controller_add_transformation((transformation*)&encode, &ctl);
+        controller_add_transformation((transformation *)&encode, &ctl);
         HANDLE_EXCEPTION();
-        controller_add_transformation((transformation*)&decode, &ctl);
+        controller_add_transformation((transformation *)&decode, &ctl);
         HANDLE_EXCEPTION();
-        controller_set_sink((sink*)&out, &ctl);
+        controller_set_sink((sink *)&out, &ctl);
         HANDLE_EXCEPTION();
 
         controller_finalize(&ctl);
@@ -75,10 +75,10 @@ int main()
         assert(strcmp(buf, msg) == 0);
 
         controller_destructor(&ctl);
-        source_destructor((source*)&in);
-        transformation_destructor((transformation*)&encode);
-        transformation_destructor((transformation*)&decode);
-        sink_destructor((sink*)&out);
+        source_destructor((source *)&in);
+        transformation_destructor((transformation *)&encode);
+        transformation_destructor((transformation *)&decode);
+        sink_destructor((sink *)&out);
     }
 
 }

@@ -36,7 +36,8 @@ int main()
                        "fffffff";
 
     //Pre calculated hash value for msg using sha1
-    const unsigned char hash_val[] = {0x5e, 0x91, 0x6a, 0x59, 0xe9, 0x97, 0x3b, 0xb7, 0xbe, 0x02, 0x90, 0xe1, 0xf2, 0x83, 0xe3, 0xd3, 0x08, 0xaa, 0x7c, 0x11};
+    const unsigned char hash_val[] = {0x5e, 0x91, 0x6a, 0x59, 0xe9, 0x97, 0x3b, 0xb7, 0xbe, 0x02, 0x90, 0xe1, 0xf2,
+                                      0x83, 0xe3, 0xd3, 0x08, 0xaa, 0x7c, 0x11};
 
     EXCEPTION_CLEAR();
 
@@ -63,13 +64,13 @@ int main()
         controller_constructor(&ctl);
         HANDLE_EXCEPTION();
 
-        controller_set_source((source*)&in, &ctl);
+        controller_set_source((source *)&in, &ctl);
         HANDLE_EXCEPTION();
-        controller_add_transformation((transformation*)&encrypt, &ctl);
+        controller_add_transformation((transformation *)&encrypt, &ctl);
         HANDLE_EXCEPTION();
-        controller_add_transformation((transformation*)&decrypt, &ctl);
+        controller_add_transformation((transformation *)&decrypt, &ctl);
         HANDLE_EXCEPTION();
-        controller_set_sink((sink*)&out, &ctl);
+        controller_set_sink((sink *)&out, &ctl);
         HANDLE_EXCEPTION();
 
         controller_finalize(&ctl);
@@ -79,10 +80,10 @@ int main()
         assert(strcmp(buf, msg) == 0);
 
         controller_destructor(&ctl);
-        source_destructor((source*)&in);
-        transformation_destructor((transformation*)&encrypt);
-        transformation_destructor((transformation*)&decrypt);
-        sink_destructor((sink*)&out);
+        source_destructor((source *)&in);
+        transformation_destructor((transformation *)&encrypt);
+        transformation_destructor((transformation *)&decrypt);
+        sink_destructor((sink *)&out);
     }
 
     //Hash
@@ -106,11 +107,11 @@ int main()
         controller_constructor(&ctl);
         HANDLE_EXCEPTION();
 
-        controller_set_source((source*)&in, &ctl);
+        controller_set_source((source *)&in, &ctl);
         HANDLE_EXCEPTION();
-        controller_add_transformation((transformation*)&hash, &ctl);
+        controller_add_transformation((transformation *)&hash, &ctl);
         HANDLE_EXCEPTION();
-        controller_set_sink((sink*)&out, &ctl);
+        controller_set_sink((sink *)&out, &ctl);
         HANDLE_EXCEPTION();
 
         controller_finalize(&ctl);
@@ -120,9 +121,9 @@ int main()
         assert(memcmp(buf, hash_val, sizeof(hash_val)) == 0);
 
         controller_destructor(&ctl);
-        source_destructor((source*)&in);
-        transformation_destructor((transformation*)&hash);
-        sink_destructor((sink*)&out);
+        source_destructor((source *)&in);
+        transformation_destructor((transformation *)&hash);
+        sink_destructor((sink *)&out);
     }
 
     return 0;

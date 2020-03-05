@@ -5,14 +5,14 @@
 
 transformation_call_tab transformation_call_tab_replace =
         {
-                .destructor = (void (*)(transformation *)) transformation_replace_destructor,
-                .transform = (void (*)(transformation *)) transformation_replace_transform,
-                .finalize = (void (*)(transformation *)) transformation_replace_finalize,
-                .sink_min = (size_t (*)(const transformation *)) transformation_replace_sink_min,
-                .source_min = (size_t (*)(const transformation *)) transformation_replace_source_min
+                .destructor = (void (*)(transformation *))transformation_replace_destructor,
+                .transform = (void (*)(transformation *))transformation_replace_transform,
+                .finalize = (void (*)(transformation *))transformation_replace_finalize,
+                .sink_min = (size_t (*)(const transformation *))transformation_replace_sink_min,
+                .source_min = (size_t (*)(const transformation *))transformation_replace_source_min
         };
 
-void transformation_replace_transform(transformation_replace* this)
+void transformation_replace_transform(transformation_replace *this)
 {
     assert(buffer_read_size(this->base.source) >= transformation_replace_source_min(this));
     assert(buffer_write_size(this->base.sink) >= transformation_replace_sink_min(this));
@@ -29,7 +29,7 @@ void transformation_replace_transform(transformation_replace* this)
     buffer_winc(1, this->base.sink);
 }
 
-void transformation_replace_finalize(transformation_replace* this)
+void transformation_replace_finalize(transformation_replace *this)
 {
     assert(buffer_read_size(this->base.source) < transformation_replace_source_min(this));
     assert(buffer_write_size(this->base.sink) >= transformation_replace_sink_min(this));
@@ -37,22 +37,24 @@ void transformation_replace_finalize(transformation_replace* this)
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
-size_t transformation_replace_sink_min(const transformation_replace* this)
+
+size_t transformation_replace_sink_min(const transformation_replace *this)
 {
     return 1;
 }
 
-size_t transformation_replace_source_min(const transformation_replace* this)
+size_t transformation_replace_source_min(const transformation_replace *this)
 {
     return 1;
 }
 
-void transformation_replace_destructor(transformation_replace* this)
+void transformation_replace_destructor(transformation_replace *this)
 {
 }
+
 #pragma GCC diagnostic pop
 
-void transformation_replace_constructor(const char* symbols, size_t size, char replace, transformation_replace* this)
+void transformation_replace_constructor(const char *symbols, size_t size, char replace, transformation_replace *this)
 {
     assert(sizeof(this->mask) * 8 > UCHAR_MAX);
     memset(&this->mask, 0, sizeof(this->mask));

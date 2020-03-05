@@ -56,11 +56,11 @@ int main()
         controller_constructor(&ctl);
         HANDLE_EXCEPTION();
 
-        controller_set_source((source*)&in, &ctl);
+        controller_set_source((source *)&in, &ctl);
         HANDLE_EXCEPTION();
-        controller_add_transformation((transformation*)&replace, &ctl);
+        controller_add_transformation((transformation *)&replace, &ctl);
         HANDLE_EXCEPTION();
-        controller_set_sink((sink*)&out, &ctl);
+        controller_set_sink((sink *)&out, &ctl);
         HANDLE_EXCEPTION();
 
         controller_finalize(&ctl);
@@ -80,9 +80,9 @@ int main()
         }
 
         controller_destructor(&ctl);
-        source_destructor((source*)&in);
-        transformation_destructor((transformation*)&replace);
-        sink_destructor((sink*)&out);
+        source_destructor((source *)&in);
+        transformation_destructor((transformation *)&replace);
+        sink_destructor((sink *)&out);
     }
 
     //Remove
@@ -105,11 +105,11 @@ int main()
         controller_constructor(&ctl);
         HANDLE_EXCEPTION();
 
-        controller_set_source((source*)&in, &ctl);
+        controller_set_source((source *)&in, &ctl);
         HANDLE_EXCEPTION();
-        controller_add_transformation((transformation*)&remove, &ctl);
+        controller_add_transformation((transformation *)&remove, &ctl);
         HANDLE_EXCEPTION();
-        controller_set_sink((sink*)&out, &ctl);
+        controller_set_sink((sink *)&out, &ctl);
         HANDLE_EXCEPTION();
 
         controller_finalize(&ctl);
@@ -127,9 +127,9 @@ int main()
         }
 
         controller_destructor(&ctl);
-        source_destructor((source*)&in);
-        transformation_destructor((transformation*)&remove);
-        sink_destructor((sink*)&out);
+        source_destructor((source *)&in);
+        transformation_destructor((transformation *)&remove);
+        sink_destructor((sink *)&out);
     }
 
     return 0;
