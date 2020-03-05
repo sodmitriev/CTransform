@@ -16,7 +16,7 @@ extern void sink_getc_destructor(sink_getc *this);
 
 extern size_t sink_getc_source_min(const sink_getc *this);
 
-extern size_t sink_getc_send(sink_getc *this);
+extern void sink_getc_send(sink_getc *this);
 
 extern bool sink_getc_end(const sink_getc *this);
 

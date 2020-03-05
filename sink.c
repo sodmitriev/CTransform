@@ -10,9 +10,9 @@ size_t sink_source_min(sink *this)
     return this->call_tab->source_min(this);
 }
 
-size_t sink_send(sink *this)
+void sink_send(sink *this)
 {
-    return this->call_tab->send(this);
+    this->call_tab->send(this);
 }
 
 bool sink_end(const sink *this)

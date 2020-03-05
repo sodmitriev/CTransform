@@ -18,7 +18,7 @@ extern void sink_read_destructor(sink_read *this);
 
 extern size_t sink_read_source_min(const sink_read *this);
 
-extern size_t sink_read_send(sink_read *this);
+extern void sink_read_send(sink_read *this);
 
 extern bool sink_read_end(const sink_read *this);
 

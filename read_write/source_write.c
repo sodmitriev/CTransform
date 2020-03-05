@@ -4,7 +4,7 @@
 source_call_tab source_call_tab_write =
         {
                 .destructor  = (void (*)(source *))source_write_destructor,
-                .send        = (size_t (*)(source *))source_write_send,
+                .send        = (void (*)(source *))source_write_send,
                 .sink_min    = (size_t (*)(const source *))source_write_sink_min,
                 .end         = (bool (*)(const source *))source_write_end
         };
@@ -24,7 +24,7 @@ void source_write_destructor(source_write *this)
     this->cnt = 0;
 }
 
-size_t source_write_send(source_write *this)
+void source_write_send(source_write *this)
 {
     size_t sink_cnt = buffer_write_size(this->base.sink) / this->size;
     size_t have_cnt = this->nmemb - this->cnt;
@@ -32,7 +32,6 @@ size_t source_write_send(source_write *this)
     memcpy(buffer_wpos(this->base.sink), (const char *)this->ptr + this->cnt * this->size, count * this->size);
     buffer_winc(count * this->size, this->base.sink);
     this->cnt += count;
-    return count;
 }
 
 size_t source_write_sink_min(source_write *this)

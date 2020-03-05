@@ -16,7 +16,7 @@ extern void source_write_constructor(source_write *this);
 
 extern void source_write_destructor(source_write *this);
 
-extern size_t source_write_send(source_write *this);
+extern void source_write_send(source_write *this);
 
 extern size_t source_write_sink_min(source_write *this);
 

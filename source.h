@@ -15,7 +15,7 @@ typedef struct source_call_tab
 
     size_t (*sink_min)(const source *this); //minimum sink size
 
-    size_t (*send)(source *this);
+    void (*send)(source *this);
 
     bool (*end)(const source *this);
 } source_call_tab;
@@ -24,7 +24,7 @@ extern void source_destructor(source *this);
 
 extern size_t source_sink_min(source *this);
 
-extern size_t source_send(source *this);
+extern void source_send(source *this);
 
 extern bool source_end(const source *this);
 

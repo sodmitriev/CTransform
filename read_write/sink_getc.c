@@ -6,7 +6,7 @@ sink_call_tab sink_call_tab_getc =
         {
                 .destructor  = (void (*)(sink *))sink_getc_destructor,
                 .source_min  = (size_t (*)(const sink *))sink_getc_source_min,
-                .send        = (size_t (*)(sink *))sink_getc_send,
+                .send        = (void (*)(sink *))sink_getc_send,
                 .end         = (bool (*)(const sink *))sink_getc_end
         };
 
@@ -33,14 +33,13 @@ size_t sink_getc_source_min(const sink_getc *this)
 
 #pragma GCC diagnostic pop
 
-size_t sink_getc_send(sink_getc *this)
+void sink_getc_send(sink_getc *this)
 {
     assert(buffer_readable(this->base.source));
     assert(!this->received);
     this->chr = *buffer_rpos(this->base.source);
     buffer_rinc(1, this->base.source);
     this->received = true;
-    return 1;
 }
 
 bool sink_getc_end(const sink_getc *this)
