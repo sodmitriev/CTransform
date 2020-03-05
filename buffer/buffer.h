@@ -20,6 +20,8 @@ extern size_t buffer_read_size(const buffer* this);
 
 extern size_t buffer_write_size(const buffer* this);
 
+extern size_t buffer_occupied(const buffer* this);
+
 extern bool buffer_readable(const buffer* this);
 
 extern bool buffer_writable(const buffer* this);
@@ -37,5 +39,7 @@ extern void buffer_rinc(size_t off, buffer* this);
 extern size_t buffer_size(const buffer* this);
 
 extern void buffer_resize(size_t size, buffer* this);
+
+extern void buffer_compact(buffer* this);
 
 #endif //CTRANSFORM_BUFFER_H

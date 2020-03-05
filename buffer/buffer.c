@@ -38,6 +38,11 @@ size_t buffer_write_size(const buffer* this)
     return this->size - this->wpos;
 }
 
+size_t buffer_occupied(const buffer* this)
+{
+    return this->wpos;
+}
+
 bool buffer_readable(const buffer* this)
 {
     return buffer_read_size(this) > 0;
@@ -99,4 +104,15 @@ void buffer_resize(size_t size, buffer* this)
     {
         this->rpos = this->wpos;
     }
+}
+
+void buffer_compact(buffer* this)
+{
+    if(this->rpos == 0)
+    {
+        return;
+    }
+    memmove(this->buf, this->buf + this->rpos, this->wpos - this->rpos);
+    this->wpos = this->wpos - this->rpos;
+    this->rpos = 0;
 }
