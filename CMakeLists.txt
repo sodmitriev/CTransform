@@ -31,6 +31,7 @@ add_subdirectory(util)
 add_subdirectory(crypto)
 add_subdirectory(encode)
 add_subdirectory(file)
+add_subdirectory(compress)
 
 add_executable(controller_test controller_test.c)
 target_link_libraries(controller_test controller transformation_encrypt transformation_decrypt sink_read source_write)
