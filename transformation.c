@@ -15,9 +15,9 @@ void transformation_transform(transformation *this)
     this->call_tab->transform(this);
 }
 
-void transformation_finalize(transformation *this)
+bool transformation_finalize(transformation *this)
 {
-    this->call_tab->finalize(this);
+    return this->call_tab->finalize(this);
 }
 
 size_t transformation_sink_min(const transformation *this)

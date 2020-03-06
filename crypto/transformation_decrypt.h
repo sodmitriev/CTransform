@@ -17,7 +17,7 @@ extern void transformation_decrypt_destructor(transformation_decrypt *this);
 
 extern void transformation_decrypt_transform(transformation_decrypt *this);
 
-extern void transformation_decrypt_finalize(transformation_decrypt *this);
+extern bool transformation_decrypt_finalize(transformation_decrypt *this);
 
 extern size_t transformation_decrypt_sink_min(const transformation_decrypt *this);
 

@@ -7,7 +7,7 @@ transformation_call_tab transformation_call_tab_replace =
         {
                 .destructor = (void (*)(transformation *))transformation_replace_destructor,
                 .transform = (void (*)(transformation *))transformation_replace_transform,
-                .finalize = (void (*)(transformation *))transformation_replace_finalize,
+                .finalize = (bool (*)(transformation *))transformation_replace_finalize,
                 .sink_min = (size_t (*)(const transformation *))transformation_replace_sink_min,
                 .source_min = (size_t (*)(const transformation *))transformation_replace_source_min
         };
@@ -33,10 +33,11 @@ void transformation_replace_transform(transformation_replace *this)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 
-void transformation_replace_finalize(transformation_replace *this)
+bool transformation_replace_finalize(transformation_replace *this)
 {
     assert(buffer_read_size(this->base.source) < transformation_replace_source_min(this));
     assert(buffer_write_size(this->base.sink) >= transformation_replace_sink_min(this));
+    return true;
 }
 
 size_t transformation_replace_sink_min(const transformation_replace *this)

@@ -16,7 +16,7 @@ extern void transformation_hash_destructor(transformation_hash *this);
 
 extern void transformation_hash_transform(transformation_hash *this);
 
-extern void transformation_hash_finalize(transformation_hash *this);
+extern bool transformation_hash_finalize(transformation_hash *this);
 
 extern size_t transformation_hash_sink_min(const transformation_hash *this);
 

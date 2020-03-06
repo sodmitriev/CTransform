@@ -8,7 +8,7 @@ transformation_call_tab transformation_call_tab_hash =
         {
                 .destructor = (void (*)(transformation *))transformation_hash_destructor,
                 .transform = (void (*)(transformation *))transformation_hash_transform,
-                .finalize = (void (*)(transformation *))transformation_hash_finalize,
+                .finalize = (bool (*)(transformation *))transformation_hash_finalize,
                 .sink_min = (size_t (*)(const transformation *))transformation_hash_sink_min,
                 .source_min = (size_t (*)(const transformation *))transformation_hash_source_min
         };
@@ -31,18 +31,19 @@ void transformation_hash_transform(transformation_hash *this)
     buffer_rinc(size, this->base.source);
 }
 
-void transformation_hash_finalize(transformation_hash *this)
+bool transformation_hash_finalize(transformation_hash *this)
 {
     assert(buffer_write_size(this->base.sink) >= this->md_size); //Must be provided by manager
     unsigned int len;
     if(EVP_DigestFinal_ex(this->ctx, (unsigned char *)buffer_wpos(this->base.sink), &len) == 0)
     {
         EXCEPTION_THROW(ENOANO, "%s", "Failed to finalize hash calculation");
-        return;
+        return false;
     }
     assert(len > 0);
     assert((size_t)len == this->md_size);
     buffer_winc(this->md_size, this->base.sink);
+    return true;
 }
 
 size_t transformation_hash_sink_min(const transformation_hash *this)

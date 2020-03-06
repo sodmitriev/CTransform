@@ -230,7 +230,7 @@ void controller_finalize(controller *this)
         link_sink_source(this);
     }
     //For each buffer
-    for(; this->last_fin != this->last; this->last_fin = this->last_fin->next->next)
+    while(this->last_fin != this->last)
     {
         //Work until this buffer flushes maximum data
         while(buffer_read_size(&this->last_fin->buffer) >= transformation_source_min(this->last_fin->next->transform))
@@ -261,8 +261,13 @@ void controller_finalize(controller *this)
                 return;
             }
         }
-        transformation_finalize(this->last_fin->next->transform);
+        bool ret = transformation_finalize(this->last_fin->next->transform);
         RETHROW_EXCEPTION();
+        //Advance if finished, else repeat all again for the same buffer
+        if(ret)
+        {
+            this->last_fin = this->last_fin->next->next;
+        }
     }
     //Flush whatever is left from last transformation finalization
     controller_work_sink(this);

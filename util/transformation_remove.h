@@ -16,7 +16,7 @@ extern void transformation_remove_destructor(transformation_remove *this);
 
 extern void transformation_remove_transform(transformation_remove *this);
 
-extern void transformation_remove_finalize(transformation_remove *this);
+extern bool transformation_remove_finalize(transformation_remove *this);
 
 extern size_t transformation_remove_sink_min(const transformation_remove *this);
 

@@ -11,7 +11,7 @@ transformation_call_tab transformation_call_tab_decrypt =
         {
                 .destructor = (void (*)(transformation *))transformation_decrypt_destructor,
                 .transform = (void (*)(transformation *))transformation_decrypt_transform,
-                .finalize = (void (*)(transformation *))transformation_decrypt_finalize,
+                .finalize = (bool (*)(transformation *))transformation_decrypt_finalize,
                 .sink_min = (size_t (*)(const transformation *))transformation_decrypt_sink_min,
                 .source_min = (size_t (*)(const transformation *))transformation_decrypt_source_min
         };
@@ -114,16 +114,17 @@ void transformation_decrypt_transform(transformation_decrypt *this)
     }
 }
 
-void transformation_decrypt_finalize(transformation_decrypt *this)
+bool transformation_decrypt_finalize(transformation_decrypt *this)
 {
     int len;
     if(EVP_DecryptFinal_ex(this->ctx, (unsigned char *)buffer_wpos(this->base.sink), &len) != 1)
     {
         EXCEPTION_THROW(ENOANO, "%s", "Failed to finalize decryption");
-        return;
+        return false;
     }
     assert(len >= 0); //OpenSSL should guarantee this
     buffer_winc((size_t)len, this->base.sink);
+    return true;
 }
 
 size_t transformation_decrypt_sink_min(const transformation_decrypt *this)

@@ -34,6 +34,8 @@ extern void buffer_winc(size_t off, buffer *this);
 
 extern const char *buffer_rpos(const buffer *this);
 
+extern char *buffer_rpos_w(buffer *this);
+
 extern void buffer_rinc(size_t off, buffer *this);
 
 extern size_t buffer_size(const buffer *this);

@@ -75,6 +75,11 @@ const char *buffer_rpos(const buffer *this)
     return this->buf + this->rpos;
 }
 
+char *buffer_rpos_w(buffer *this)
+{
+    return this->buf + this->rpos;
+}
+
 void buffer_rinc(size_t off, buffer *this)
 {
     this->rpos += off;

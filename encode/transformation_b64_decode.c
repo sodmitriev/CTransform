@@ -9,7 +9,7 @@ transformation_call_tab transformation_call_tab_b64_decode =
         {
                 .destructor = (void (*)(transformation *))transformation_b64_decode_destructor,
                 .transform = (void (*)(transformation *))transformation_b64_decode_transform,
-                .finalize = (void (*)(transformation *))transformation_b64_decode_finalize,
+                .finalize = (bool (*)(transformation *))transformation_b64_decode_finalize,
                 .sink_min = (size_t (*)(const transformation *))transformation_b64_decode_sink_min,
                 .source_min = (size_t (*)(const transformation *))transformation_b64_decode_source_min
         };
@@ -50,7 +50,7 @@ void transformation_b64_decode_transform(transformation_b64_decode *this)
     buffer_rinc(64, this->base.source);
 }
 
-void transformation_b64_decode_finalize(transformation_b64_decode *this)
+bool transformation_b64_decode_finalize(transformation_b64_decode *this)
 {
     assert(buffer_read_size(this->base.source) < transformation_b64_decode_source_min(this));
     assert(buffer_write_size(this->base.sink) >= transformation_b64_decode_sink_min(this));
@@ -63,11 +63,12 @@ void transformation_b64_decode_finalize(transformation_b64_decode *this)
         {
             EXCEPTION_THROW(ENOANO, "%s",
                             "Failed to decode block from base64 (may be caused by spaces or new lines in input string)");
-            return;
+            return false;
         }
         buffer_winc(res - get_padding(buffer_rpos(this->base.source), left), this->base.sink);
         buffer_rinc(left, this->base.source);
     }
+    return true;
 }
 
 #pragma GCC diagnostic push

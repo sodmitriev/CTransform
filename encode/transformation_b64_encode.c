@@ -6,7 +6,7 @@ transformation_call_tab transformation_call_tab_b64_encode =
         {
                 .destructor = (void (*)(transformation *))transformation_b64_encode_destructor,
                 .transform = (void (*)(transformation *))transformation_b64_encode_transform,
-                .finalize = (void (*)(transformation *))transformation_b64_encode_finalize,
+                .finalize = (bool (*)(transformation *))transformation_b64_encode_finalize,
                 .sink_min = (size_t (*)(const transformation *))transformation_b64_encode_sink_min,
                 .source_min = (size_t (*)(const transformation *))transformation_b64_encode_source_min
         };
@@ -27,7 +27,7 @@ void transformation_b64_encode_transform(transformation_b64_encode *this)
     buffer_winc(64, this->base.sink);
 }
 
-void transformation_b64_encode_finalize(transformation_b64_encode *this)
+bool transformation_b64_encode_finalize(transformation_b64_encode *this)
 {
     assert(buffer_read_size(this->base.source) < transformation_b64_encode_source_min(this));
     assert(buffer_write_size(this->base.sink) >= transformation_b64_encode_sink_min(this));
@@ -40,6 +40,7 @@ void transformation_b64_encode_finalize(transformation_b64_encode *this)
         buffer_rinc(buffer_read_size(this->base.source), this->base.source);
         buffer_winc((size_t)written, this->base.sink);
     }
+    return true;
 }
 
 #pragma GCC diagnostic push

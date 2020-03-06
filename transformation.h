@@ -17,7 +17,7 @@ typedef struct transformation_call_tab
 
     void (*transform)(transformation *this);
 
-    void (*finalize)(transformation *this);
+    bool (*finalize)(transformation *this);
 
     size_t (*sink_min)(const transformation *this); //minimum sink size, shall be constant
 
@@ -28,7 +28,7 @@ extern void transformation_destructor(transformation *this);
 
 extern void transformation_transform(transformation *this);
 
-extern void transformation_finalize(transformation *this);
+extern bool transformation_finalize(transformation *this);
 
 extern size_t transformation_sink_min(const transformation *this);
 

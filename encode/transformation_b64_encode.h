@@ -14,7 +14,7 @@ extern void transformation_b64_encode_destructor(transformation_b64_encode *this
 
 extern void transformation_b64_encode_transform(transformation_b64_encode *this);
 
-extern void transformation_b64_encode_finalize(transformation_b64_encode *this);
+extern bool transformation_b64_encode_finalize(transformation_b64_encode *this);
 
 extern size_t transformation_b64_encode_sink_min(const transformation_b64_encode *this);
 

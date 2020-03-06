@@ -7,7 +7,7 @@ transformation_call_tab transformation_call_tab_remove =
         {
                 .destructor = (void (*)(transformation *))transformation_remove_destructor,
                 .transform = (void (*)(transformation *))transformation_remove_transform,
-                .finalize = (void (*)(transformation *))transformation_remove_finalize,
+                .finalize = (bool (*)(transformation *))transformation_remove_finalize,
                 .sink_min = (size_t (*)(const transformation *))transformation_remove_sink_min,
                 .source_min = (size_t (*)(const transformation *))transformation_remove_source_min
         };
@@ -29,10 +29,11 @@ void transformation_remove_transform(transformation_remove *this)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 
-void transformation_remove_finalize(transformation_remove *this)
+bool transformation_remove_finalize(transformation_remove *this)
 {
     assert(buffer_read_size(this->base.source) < transformation_remove_source_min(this));
     assert(buffer_write_size(this->base.sink) >= transformation_remove_sink_min(this));
+    return true;
 }
 
 size_t transformation_remove_sink_min(const transformation_remove *this)
