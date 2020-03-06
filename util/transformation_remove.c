@@ -26,14 +26,14 @@ void transformation_remove_transform(transformation_remove *this)
     buffer_winc(1, this->base.sink);
 }
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+
 void transformation_remove_finalize(transformation_remove *this)
 {
     assert(buffer_read_size(this->base.source) < transformation_remove_source_min(this));
     assert(buffer_write_size(this->base.sink) >= transformation_remove_sink_min(this));
 }
-
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunused-parameter"
 
 size_t transformation_remove_sink_min(const transformation_remove *this)
 {

@@ -15,9 +15,14 @@ void transformation_b64_encode_transform(transformation_b64_encode *this)
 {
     assert(buffer_read_size(this->base.source) >= transformation_b64_encode_source_min(this));
     assert(buffer_write_size(this->base.sink) >= transformation_b64_encode_sink_min(this));
-    int written = EVP_EncodeBlock((unsigned char *)buffer_wpos(this->base.sink),
-                                  (const unsigned char *)buffer_rpos(this->base.source), 48);
+#ifndef NDEBUG
+    int written =
+#endif
+    EVP_EncodeBlock((unsigned char *)buffer_wpos(this->base.sink),
+                    (const unsigned char *)buffer_rpos(this->base.source), 48);
+#ifndef NDEBUG
     assert(written == 64);
+#endif
     buffer_rinc(48, this->base.source);
     buffer_winc(64, this->base.sink);
 }
