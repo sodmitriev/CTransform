@@ -60,6 +60,8 @@ int main()
         controller_constructor(&ctl);
         HANDLE_EXCEPTION();
 
+        assert(controller_get_stage(&ctl) == controller_stage_build);
+
         controller_set_source((source *)&in, &ctl);
         HANDLE_EXCEPTION();
         controller_add_transformation((transformation *)&encrypt, &ctl);
@@ -69,11 +71,15 @@ int main()
         controller_set_sink((sink *)&out, &ctl);
         HANDLE_EXCEPTION();
 
+        assert(controller_get_stage(&ctl) == controller_stage_build);
+
         source_write_set(msg, 1, sizeof(msg), &in);
         sink_read_set(buf, 1, sizeof(buf), &out);
 
         controller_finalize(&ctl);
         HANDLE_EXCEPTION();
+
+        assert(controller_get_stage(&ctl) == controller_stage_done);
 
         assert(sink_read_get_result(&out) == sizeof(msg));
         assert(strcmp(buf, msg) == 0);
@@ -110,6 +116,8 @@ int main()
         controller_constructor(&ctl);
         HANDLE_EXCEPTION();
 
+        assert(controller_get_stage(&ctl) == controller_stage_build);
+
         controller_set_source((source *)&in, &ctl);
         HANDLE_EXCEPTION();
         controller_add_transformation((transformation *)&encrypt, &ctl);
@@ -118,6 +126,8 @@ int main()
         HANDLE_EXCEPTION();
         controller_set_sink((sink *)&out, &ctl);
         HANDLE_EXCEPTION();
+
+        assert(controller_get_stage(&ctl) == controller_stage_build);
 
         source_write_set(msg, 1, sizeof(msg), &in);
 
@@ -130,6 +140,8 @@ int main()
             controller_finalize(&ctl);
             HANDLE_EXCEPTION();
 
+            assert(controller_get_stage(&ctl) == controller_stage_final);
+
             assert(sink_end((sink *)&out));
 
             assert(sink_read_get_result(&out) == chunk_size);
@@ -141,6 +153,8 @@ int main()
 
         controller_finalize(&ctl);
         HANDLE_EXCEPTION();
+
+        assert(controller_get_stage(&ctl) == controller_stage_done);
 
         assert(source_end((source *)&in));
         assert(sink_end((sink *)&out));
@@ -178,6 +192,8 @@ int main()
         controller_constructor(&ctl);
         HANDLE_EXCEPTION();
 
+        assert(controller_get_stage(&ctl) == controller_stage_build);
+
         controller_set_source((source *)&in, &ctl);
         HANDLE_EXCEPTION();
         controller_add_transformation((transformation *)&encrypt, &ctl);
@@ -186,6 +202,8 @@ int main()
         HANDLE_EXCEPTION();
         controller_set_sink((sink *)&out, &ctl);
         HANDLE_EXCEPTION();
+
+        assert(controller_get_stage(&ctl) == controller_stage_build);
 
         sink_read_set(buf, 1, sizeof(msg), &out);
 
@@ -198,6 +216,8 @@ int main()
             controller_work(&ctl);
             HANDLE_EXCEPTION();
 
+            assert(controller_get_stage(&ctl) == controller_stage_work);
+
             assert(source_end((source *)&in));
             assert(!sink_end((sink *)&out));
 
@@ -208,6 +228,8 @@ int main()
 
         controller_finalize(&ctl);
         HANDLE_EXCEPTION();
+
+        assert(controller_get_stage(&ctl) == controller_stage_done);
 
         assert(source_end((source *)&in));
         assert(sink_end((sink *)&out));

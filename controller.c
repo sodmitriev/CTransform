@@ -47,6 +47,7 @@ void controller_constructor(controller *this)
     }
     this->first = node;
     this->last = node;
+    this->stage = controller_stage_build;
 }
 
 void controller_destructor(controller *this)
@@ -70,12 +71,14 @@ void controller_destructor(controller *this)
     this->first = NULL;
     this->last = NULL;
     this->last_fin = NULL;
+    this->stage = controller_stage_done;
 }
 
 void controller_add_transformation(transformation *transform, controller *this)
 {
     assert(this->first);
     assert(this->last);
+    assert(this->stage == controller_stage_build);
     controller_transformation_node *trans_node = malloc(sizeof(controller_transformation_node));
     controller_buffer_node *buf_node = malloc(sizeof(controller_buffer_node));
     if(!trans_node || !buf_node)
@@ -101,11 +104,13 @@ void controller_add_transformation(transformation *transform, controller *this)
 
 void controller_set_source(source *in, controller *this)
 {
+    assert(this->stage == controller_stage_build || this->stage == controller_stage_work);
     this->in = in;
 }
 
 void controller_set_sink(sink *out, controller *this)
 {
+    assert(this->stage != controller_stage_done);
     this->out = out;
 }
 
@@ -193,7 +198,7 @@ static void controller_work_sink(controller *this)
     }
 }
 
-void controller_work(controller *this)
+static void controller_work_cycle(controller *this)
 {
     adjust_buffers(this);
     RETHROW_EXCEPTION();
@@ -210,11 +215,20 @@ void controller_work(controller *this)
     }
 }
 
+void controller_work(controller *this)
+{
+    assert(this->stage == controller_stage_build || this->stage == controller_stage_work);
+    this->stage = controller_stage_work;
+    controller_work_cycle(this);
+}
+
 void controller_finalize(controller *this)
 {
+    assert(this->stage != controller_stage_done);
+    this->stage = controller_stage_final;
     if(!this->last_fin)
     {
-        controller_work(this);
+        controller_work_cycle(this);
         RETHROW_EXCEPTION();
         if(sink_end(this->out))
         {
@@ -272,4 +286,13 @@ void controller_finalize(controller *this)
     //Flush whatever is left from last transformation finalization
     controller_work_sink(this);
     RETHROW_EXCEPTION();
+    if(buffer_read_size(&this->last->buffer) < sink_source_min(this->out))
+    {
+        this->stage = controller_stage_done;
+    }
+}
+
+controller_stage controller_get_stage(controller *this)
+{
+    return this->stage;
 }
