@@ -93,6 +93,7 @@ size_t buffer_size(const buffer *this)
 
 void buffer_resize(size_t size, buffer *this)
 {
+    //Reallocate memory
     char *new_buf = realloc(this->buf, size);
     if(!new_buf)
     {
@@ -100,7 +101,9 @@ void buffer_resize(size_t size, buffer *this)
         return;
     }
     this->buf = new_buf;
+    //Set new size
     this->size = size;
+    //Adjust read and write cursors if they point after the buffer
     if(this->wpos > this->size)
     {
         this->wpos = this->size;
@@ -113,11 +116,14 @@ void buffer_resize(size_t size, buffer *this)
 
 void buffer_compact(buffer *this)
 {
+    //If read cursor in the beginning buffer can't be compacted
     if(this->rpos == 0)
     {
         return;
     }
+    //Move usable data to the beginning of the buffer
     memmove(this->buf, this->buf + this->rpos, this->wpos - this->rpos);
+    //Adjust cursors
     this->wpos = this->wpos - this->rpos;
     this->rpos = 0;
 }
