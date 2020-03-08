@@ -122,9 +122,7 @@ void source_my_source_destructor(source_my_source *this)
     this->custom_member2 = NULL;
     this->custom_member1 = 0;
 
-    //You may set call_tab and sink to NULL, or may leave them expired
-    this->base.sink = NULL;
-    this->base.call_tab = &source_call_tab_my_source;
+    //call_tab and sink will be set to NULL in base class destructor
 }
 
 void source_my_source_send(source_my_source *this)

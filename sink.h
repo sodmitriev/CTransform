@@ -7,6 +7,7 @@
 #define CTRANSFORM_SINK_H
 
 #include "buffer/buffer.h"
+#include <assert.h>
 
 /*!
  * @class sink
@@ -80,8 +81,7 @@ typedef struct sink_call_tab
  * @memberof sink
  * @param this Pointer to "this" sink
  *
- * Override of this method shall free all resources that were allocated in derived class methods. It may set base class
- * member variables to NULL if desired.
+ * Override of this method shall free all resources that were allocated in derived class methods.
  *
  * Overrides of this methods shall not throw.
  */

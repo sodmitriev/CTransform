@@ -92,8 +92,6 @@ static int do_compression(transformation_compress *this, int flush)
 
 void transformation_compress_transform(transformation_compress *this)
 {
-    assert(buffer_read_size(this->base.source) >= transformation_compress_source_min(this));
-    assert(buffer_write_size(this->base.sink) >= transformation_compress_sink_min(this));
     int ret = do_compression(this, Z_NO_FLUSH);
     if(ret != Z_OK)
     {
@@ -113,8 +111,6 @@ void transformation_compress_transform(transformation_compress *this)
 
 bool transformation_compress_finalize(transformation_compress *this)
 {
-    assert(buffer_read_size(this->base.source) < transformation_compress_source_min(this));
-    assert(buffer_write_size(this->base.sink) >= transformation_compress_sink_min(this));
     int ret = do_compression(this, Z_FINISH);
     if(ret != Z_OK && ret != Z_STREAM_END)
     {

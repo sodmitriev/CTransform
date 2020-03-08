@@ -117,15 +117,11 @@ static void do_decompression(transformation_decompress *this)
 
 void transformation_decompress_transform(transformation_decompress *this)
 {
-    assert(buffer_read_size(this->base.source) >= transformation_decompress_source_min(this));
-    assert(buffer_write_size(this->base.sink) >= transformation_decompress_sink_min(this));
     do_decompression(this);
 }
 
 bool transformation_decompress_finalize(transformation_decompress *this)
 {
-    assert(buffer_read_size(this->base.source) < transformation_decompress_source_min(this));
-    assert(buffer_write_size(this->base.sink) >= transformation_decompress_sink_min(this));
     do_decompression(this);
     //If exception is thrown return shall not be analyzed
     return this->finished;

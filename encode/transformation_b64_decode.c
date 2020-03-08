@@ -1,6 +1,5 @@
 #include "transformation_b64_decode.h"
 #include <string.h>
-#include <assert.h>
 #include <openssl/evp.h>
 #include <CEasyException/exception.h>
 #include <errno.h>
@@ -36,8 +35,6 @@ static size_t get_padding(const char *ptr, size_t size)
 
 void transformation_b64_decode_transform(transformation_b64_decode *this)
 {
-    assert(buffer_read_size(this->base.source) >= transformation_b64_decode_source_min(this));
-    assert(buffer_write_size(this->base.sink) >= transformation_b64_decode_sink_min(this));
     int res = EVP_DecodeBlock((unsigned char *)buffer_wpos(this->base.sink),
                               (const unsigned char *)buffer_rpos(this->base.source), 64);
     if(res < 0)
@@ -52,8 +49,6 @@ void transformation_b64_decode_transform(transformation_b64_decode *this)
 
 bool transformation_b64_decode_finalize(transformation_b64_decode *this)
 {
-    assert(buffer_read_size(this->base.source) < transformation_b64_decode_source_min(this));
-    assert(buffer_write_size(this->base.sink) >= transformation_b64_decode_sink_min(this));
     size_t left = buffer_read_size(this->base.source);
     if(left > 0)
     {

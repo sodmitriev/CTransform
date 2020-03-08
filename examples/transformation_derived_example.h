@@ -127,10 +127,7 @@ void transformation_my_transformation_destructor(transformation_my_transformatio
     this->custom_member2 = NULL;
     this->custom_member1 = 0;
 
-    //You may set call_tab, source and sink to NULL, or may leave them expired
-    this->base.sink = NULL;
-    this->base.source = NULL;
-    this->base.call_tab = &transformation_call_tab_my_transformation;
+    //call_tab, source and sink will be set to NULL in base class destructor
 }
 
 void transformation_my_transformation_transform(transformation_my_transformation *this)

@@ -14,8 +14,6 @@ transformation_call_tab transformation_call_tab_replace =
 
 void transformation_replace_transform(transformation_replace *this)
 {
-    assert(buffer_read_size(this->base.source) >= transformation_replace_source_min(this));
-    assert(buffer_write_size(this->base.sink) >= transformation_replace_sink_min(this));
     char byte = *buffer_rpos(this->base.source);
     buffer_rinc(1, this->base.source);
     if(this->mask[(unsigned char)byte / 8] & (1u << (unsigned char)((unsigned char)byte % 8)))
@@ -35,8 +33,6 @@ void transformation_replace_transform(transformation_replace *this)
 
 bool transformation_replace_finalize(transformation_replace *this)
 {
-    assert(buffer_read_size(this->base.source) < transformation_replace_source_min(this));
-    assert(buffer_write_size(this->base.sink) >= transformation_replace_sink_min(this));
     return true;
 }
 

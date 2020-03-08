@@ -33,7 +33,6 @@ void transformation_hash_transform(transformation_hash *this)
 
 bool transformation_hash_finalize(transformation_hash *this)
 {
-    assert(buffer_write_size(this->base.sink) >= this->md_size); //Must be provided by manager
     unsigned int len;
     if(EVP_DigestFinal_ex(this->ctx, (unsigned char *)buffer_wpos(this->base.sink), &len) == 0)
     {

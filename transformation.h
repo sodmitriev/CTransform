@@ -7,6 +7,7 @@
 #define CTRANSFORM_TRANSFORMATION_H
 
 #include "buffer/buffer.h"
+#include <assert.h>
 
 /*!
  * @class transformation
@@ -105,8 +106,7 @@ typedef struct transformation_call_tab
  * @memberof transformation
  * @param this Pointer to "this" transformation
  *
- * Override of this method shall free all resources that were allocated in derived class methods. It may set base class
- * member variables to NULL if desired.
+ * Override of this method shall free all resources that were allocated in derived class methods.
  *
  * Overrides of this methods shall not throw.
  */

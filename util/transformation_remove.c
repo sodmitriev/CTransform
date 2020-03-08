@@ -14,8 +14,6 @@ transformation_call_tab transformation_call_tab_remove =
 
 void transformation_remove_transform(transformation_remove *this)
 {
-    assert(buffer_read_size(this->base.source) >= transformation_remove_source_min(this));
-    assert(buffer_write_size(this->base.sink) >= transformation_remove_sink_min(this));
     char byte = *buffer_rpos(this->base.source);
     buffer_rinc(1, this->base.source);
     if(this->mask[(unsigned char)byte / 8] & (1u << (unsigned char)((unsigned char)byte % 8)))
@@ -31,8 +29,6 @@ void transformation_remove_transform(transformation_remove *this)
 
 bool transformation_remove_finalize(transformation_remove *this)
 {
-    assert(buffer_read_size(this->base.source) < transformation_remove_source_min(this));
-    assert(buffer_write_size(this->base.sink) >= transformation_remove_sink_min(this));
     return true;
 }
 

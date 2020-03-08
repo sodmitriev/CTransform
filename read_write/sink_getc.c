@@ -35,8 +35,6 @@ size_t sink_getc_source_min(const sink_getc *this)
 
 void sink_getc_send(sink_getc *this)
 {
-    assert(buffer_readable(this->base.source));
-    assert(!this->received);
     this->chr = *buffer_rpos(this->base.source);
     buffer_rinc(1, this->base.source);
     this->received = true;
@@ -58,6 +56,5 @@ int sink_getc_get_result(const sink_getc *this)
     {
         return EOF;
     }
-    assert(this->received);
     return (int)this->chr;
 }

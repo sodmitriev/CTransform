@@ -13,8 +13,6 @@ transformation_call_tab transformation_call_tab_b64_encode =
 
 void transformation_b64_encode_transform(transformation_b64_encode *this)
 {
-    assert(buffer_read_size(this->base.source) >= transformation_b64_encode_source_min(this));
-    assert(buffer_write_size(this->base.sink) >= transformation_b64_encode_sink_min(this));
 #ifndef NDEBUG
     int written =
 #endif
@@ -29,8 +27,6 @@ void transformation_b64_encode_transform(transformation_b64_encode *this)
 
 bool transformation_b64_encode_finalize(transformation_b64_encode *this)
 {
-    assert(buffer_read_size(this->base.source) < transformation_b64_encode_source_min(this));
-    assert(buffer_write_size(this->base.sink) >= transformation_b64_encode_sink_min(this));
     if(buffer_readable(this->base.source))
     {
         int written = EVP_EncodeBlock((unsigned char *)buffer_wpos(this->base.sink),
