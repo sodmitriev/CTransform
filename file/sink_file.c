@@ -46,7 +46,7 @@ void sink_file_send(sink_file *this)
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
-size_t sink_file_sink_min(sink_file *this)
+size_t sink_file_sink_min(const sink_file *this)
 {
     return 1;
 }

@@ -60,7 +60,7 @@ extern void source_my_source_destructor(source_my_source *this);
 
 extern void source_my_source_send(source_my_source *this);
 
-extern size_t source_my_source_sink_min(source_my_source *this);
+extern size_t source_my_source_sink_min(const source_my_source *this);
 
 extern bool source_my_source_end(const source_my_source *this);
 
@@ -154,7 +154,7 @@ void source_my_source_send(source_my_source *this)
     --this->custom_member1
 }
 
-size_t source_my_source_sink_min(source_my_source *this)
+size_t source_my_source_sink_min(const source_my_source *this)
 {
     /*
      * Set the requirement for a sink space.

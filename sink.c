@@ -5,7 +5,7 @@ void sink_destructor(sink *this)
     this->call_tab->destructor(this);
 }
 
-size_t sink_source_min(sink *this)
+size_t sink_source_min(const sink *this)
 {
     return this->call_tab->source_min(this);
 }

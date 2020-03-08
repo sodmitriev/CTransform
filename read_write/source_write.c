@@ -34,7 +34,7 @@ void source_write_send(source_write *this)
     this->cnt += count;
 }
 
-size_t source_write_sink_min(source_write *this)
+size_t source_write_sink_min(const source_write *this)
 {
     return this->size;
 }

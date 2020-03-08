@@ -16,7 +16,7 @@ extern void sink_file_destructor(sink_file *this);
 
 extern void sink_file_send(sink_file *this);
 
-extern size_t sink_file_sink_min(sink_file *this);
+extern size_t sink_file_sink_min(const sink_file *this);
 
 extern bool sink_file_end(const sink_file *this);
 

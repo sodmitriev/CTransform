@@ -16,7 +16,7 @@ extern void source_file_destructor(source_file *this);
 
 extern void source_file_send(source_file *this);
 
-extern size_t source_file_sink_min(source_file *this);
+extern size_t source_file_sink_min(const source_file *this);
 
 extern bool source_file_end(const source_file *this);
 

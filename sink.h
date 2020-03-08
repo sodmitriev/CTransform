@@ -17,7 +17,7 @@
  *
  * This class acts as a data sink in CTransform. It's main role in the process is to transfer chunks of data to an
  * internal or external source. sink_send(sink *this) is invoked by controller to fulfill this purpose.
- * sink_source_min(sink *) and sink_end(const sink *) are used by controller to retrieve information about this
+ * sink_source_min(const sink *) and sink_end(const sink *) are used by controller to retrieve information about this
  * sink's requirements and status.
  *
  * @section Guarantees
@@ -35,9 +35,9 @@
  * - @ref call_tab shall be set in a constructor of the derived class
  * - all methods of @ref call_tab shall be set to appropriate values (same return type, same or derived argument types)
  * - destructor method shall free all resources allocated by the derived class
- * - override of sink_source_min(sink *) shall return a value higher than 0
+ * - override of sink_source_min(const sink *) shall return a value higher than 0
  * - invocation of any overridden method, except for destructor, shall not affect the value returned by
- * overridden sink_source_min(sink *)
+ * overridden sink_source_min(const sink *)
  * - override of sink_send(sink *this) shall always result in a source buffer read position advancement or an
  * exception being thrown
  * - any overridden methods, except for sink_send(sink *), shall not throw
@@ -67,7 +67,7 @@ typedef struct sink_call_tab
 {
     void (*destructor)(sink *this);         ///< Pointer to overridden @ref sink_destructor(sink *) method
 
-    size_t (*source_min)(const sink *this); ///< Pointer to overridden @ref sink_source_min(sink *) method
+    size_t (*source_min)(const sink *this); ///< Pointer to overridden @ref sink_source_min(const sink *) method
 
     void (*send)(sink *this);               ///< Pointer to overridden @ref sink_send(sink *) method
 
@@ -88,7 +88,7 @@ typedef struct sink_call_tab
 extern void sink_destructor(sink *this);
 
 /*!
- * @fn sink_source_min(sink *this)
+ * @fn sink_source_min(const sink *this)
  * @brief Returns minimum required amount of readable space in source buffer for send method to be invoked
  * @memberof sink
  * @param this Pointer to "this" sink
@@ -103,7 +103,7 @@ extern void sink_destructor(sink *this);
  *
  * Overrides of this methods shall not throw.
  */
-extern size_t sink_source_min(sink *this);
+extern size_t sink_source_min(const sink *this);
 
 /*!
  * @fn sink_send(sink *this)
