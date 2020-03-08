@@ -35,10 +35,9 @@ typedef struct
  */
 
 /*
- * Declare constructor method. Any additional parameters that your constructor requires.
+ * Declare constructor method.
  *
- * You may split definition and declaration across multiple files the same way you would do this with any other
- * function.
+ * Specify any parameters that your constructor requires.
  *
  * This project conventions require derived class constructor to have the following signature:
  * `void source_<class name>_constructor(<custom arguments>, source_my_source *this)`. Feel free to ignore this
@@ -66,7 +65,7 @@ extern size_t source_my_source_sink_min(source_my_source *this);
 extern bool source_my_source_end(const source_my_source *this);
 
 /*
- * Declare any additional non virtual methods you need for derived class
+ * Declare any additional methods you need for derived class
  *
  * This project conventions require those methods methods to have the following signature:
  * `<desired return type> source_<derived class name>_<method name>(<any desired arguments>)`
@@ -74,7 +73,7 @@ extern bool source_my_source_end(const source_my_source *this);
  */
 extern void source_my_source_set(void *ptr, int argument, source_my_source *this);
 
-extern size_t source_my_source_get_result(const source_my_source *this);
+extern int source_my_source_get_result(const source_my_source *this);
 
 #endif // CTRANSFORM_SOURCE_DERIVED_EXAMPLE_H
 
@@ -137,7 +136,7 @@ void source_my_source_send(source_my_source *this)
      *
      * Controller also guarantees that if this method is invoked, source_end(this) equals to false
      *
-     * If source_end(this) returns true, send method is required to either modify output buffer write position
+     * If source_end(this) returns false, send method is required to either modify output buffer write position
      * (by calling buffer_winc method), or throw an exception (via CEasyException). Not fulfilling this condition
      * results in an infinite loop inside of controller working method.
      */
@@ -164,7 +163,7 @@ size_t source_my_source_sink_min(source_my_source *this)
      *
      * This value shall be higher than zero, and must NOT change as a result of any overridden method invocation
      * (except for destructor). Not fulfilling this condition results in an infinite loop inside of controller working
-     * method. Value may change as a result of an invocation of any non virtual method introduced to this class.
+     * method. Value may change as a result of an invocation of any non overridden method introduced to this class.
      */
     return 10;
 }
@@ -185,4 +184,7 @@ void source_my_source_set(void *ptr, int argument, source_my_source *this)
     this->custom_member2 = ptr;
 }
 
-size_t source_my_source_get_result(const source_my_source *this);
+int source_my_source_get_result(const source_my_source *this)
+{
+    return this->custom_member1;
+}
