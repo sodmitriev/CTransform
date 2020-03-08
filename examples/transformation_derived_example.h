@@ -3,7 +3,7 @@
  * @brief Example of transformation inheritance
  */
 
-//! @code transformation_inheritance_example
+//! @cond EXAMPLES
 
 //***********************************************Header code (.h file)**************************************************
 
@@ -240,3 +240,5 @@ int transformation_my_transformation_get_result(const transformation_my_transfor
 {
     return this->custom_member1;
 }
+
+//! @endcond

@@ -3,7 +3,7 @@
  * @brief Example of source inheritance
  */
 
-//! @code source_inheritance_example
+//! @cond EXAMPLES
 
 //***********************************************Header code (.h file)**************************************************
 
@@ -186,3 +186,5 @@ int source_my_source_get_result(const source_my_source *this)
 {
     return this->custom_member1;
 }
+
+//! @endcond

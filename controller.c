@@ -13,6 +13,7 @@
     }((void)(0))            \
 
 // List node that contains a buffer
+//! @cond CONTROLLER_INTERNAL
 typedef struct controller_buffer_node
 {
     buffer buffer;
@@ -25,6 +26,7 @@ typedef struct controller_transformation_node
     transformation *transform;
     struct controller_buffer_node *next;
 } controller_transformation_node;
+//! @endcond
 
 void controller_constructor(controller *this)
 {

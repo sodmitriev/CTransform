@@ -3,7 +3,7 @@
  * @brief Example of sink inheritance
  */
 
-//! @code sink_inheritance_example
+//! @cond EXAMPLES
 
 //***********************************************Header code (.h file)**************************************************
 
@@ -189,3 +189,4 @@ int sink_my_sink_get_result(const sink_my_sink *this)
 {
     return this->custom_member1;
 }
+//! @endcond
