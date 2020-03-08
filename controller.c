@@ -350,8 +350,14 @@ void controller_finalize(controller *this)
             }
         }
         //Try finalizing current transformation
-        bool ret = transformation_finalize(this->last_fin->next->transform);
-        RETHROW_EXCEPTION();
+        bool ret;
+        do
+        {
+            ret = transformation_finalize(this->last_fin->next->transform);
+            RETHROW_EXCEPTION();
+        } while(!ret
+                && buffer_write_size(&this->last_fin->next->next->buffer) >=
+                   transformation_sink_min(this->last_fin->next->transform));
         //Advance if finished, else repeat all again for the same buffer
         if(ret)
         {
