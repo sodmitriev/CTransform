@@ -1,0 +1,3 @@
+[submodule "CEasyException"]
+	path = CEasyException
+	url = git@github.com:sodmitriev/CEasyException.git
