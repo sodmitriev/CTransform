@@ -1,0 +1,14 @@
+digraph "examples" {
+  compound=true
+  node [ fontsize="10", fontname="Helvetica"];
+  edge [ labelfontsize="10", labelfontname="Helvetica"];
+  dir_d28a4824dc47e487b107a5db32ef43c4 [shape=box, label="examples", style="filled", fillcolor="#eeeeff", pencolor="black", URL="dir_d28a4824dc47e487b107a5db32ef43c4.html"];
+  dir_fb6598a949f0f53f82ac9a1a956124c7 [shape=box label="file" URL="dir_fb6598a949f0f53f82ac9a1a956124c7.html"];
+  dir_630d0a2655be529a0fbdb7a18b0f9dde [shape=box label="compress" URL="dir_630d0a2655be529a0fbdb7a18b0f9dde.html"];
+  dir_ca9d92071cfb749bbe3c028d6ab7a8f2 [shape=box label="read_write" URL="dir_ca9d92071cfb749bbe3c028d6ab7a8f2.html"];
+  dir_fb6598a949f0f53f82ac9a1a956124c7->dir_ca9d92071cfb749bbe3c028d6ab7a8f2 [headlabel="2", labeldistance=1.5 headhref="dir_000004_000005.html"];
+  dir_d28a4824dc47e487b107a5db32ef43c4->dir_fb6598a949f0f53f82ac9a1a956124c7 [headlabel="4", labeldistance=1.5 headhref="dir_000019_000004.html"];
+  dir_d28a4824dc47e487b107a5db32ef43c4->dir_630d0a2655be529a0fbdb7a18b0f9dde [headlabel="2", labeldistance=1.5 headhref="dir_000019_000001.html"];
+  dir_d28a4824dc47e487b107a5db32ef43c4->dir_ca9d92071cfb749bbe3c028d6ab7a8f2 [headlabel="2", labeldistance=1.5 headhref="dir_000019_000005.html"];
+  dir_630d0a2655be529a0fbdb7a18b0f9dde->dir_ca9d92071cfb749bbe3c028d6ab7a8f2 [headlabel="2", labeldistance=1.5 headhref="dir_000001_000005.html"];
+}

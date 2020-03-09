@@ -1,0 +1,19 @@
+var searchData=
+[
+  ['buffer_5fcompact_244',['buffer_compact',['../structbuffer.html#a9a1e6e0d84841236d4bdde531fd0d680',1,'buffer']]],
+  ['buffer_5fconstructor_245',['buffer_constructor',['../structbuffer.html#ad1b7589805db81d97b9191668dc0eded',1,'buffer']]],
+  ['buffer_5fdestructor_246',['buffer_destructor',['../structbuffer.html#ac649532b906c7fbb4cbc6870623d577a',1,'buffer']]],
+  ['buffer_5foccupied_247',['buffer_occupied',['../structbuffer.html#ae38859b5c08b6fd2b3d7999b86fdf80e',1,'buffer']]],
+  ['buffer_5fread_5fsize_248',['buffer_read_size',['../structbuffer.html#a1e97c5b75b24f76ac7a34b097893d2ff',1,'buffer']]],
+  ['buffer_5freadable_249',['buffer_readable',['../structbuffer.html#ae3c616ba35a3f5144cefa8e02a6626fa',1,'buffer']]],
+  ['buffer_5freset_250',['buffer_reset',['../structbuffer.html#a77c7961eb17df8436fa53d619ec320d9',1,'buffer']]],
+  ['buffer_5fresize_251',['buffer_resize',['../structbuffer.html#a9d5d2d1c382365dd6d99aff1154d46e0',1,'buffer']]],
+  ['buffer_5frinc_252',['buffer_rinc',['../structbuffer.html#ad4ff92677a4106aa5c786c4b3dcbd127',1,'buffer']]],
+  ['buffer_5frpos_253',['buffer_rpos',['../structbuffer.html#ae402753aece22f24ab031777280d00e4',1,'buffer']]],
+  ['buffer_5frpos_5fw_254',['buffer_rpos_w',['../structbuffer.html#a89358ddff95901d037f20bbd40926709',1,'buffer']]],
+  ['buffer_5fsize_255',['buffer_size',['../structbuffer.html#a1283e4f44ec6d07d6a9d2bdf011206f4',1,'buffer']]],
+  ['buffer_5fwinc_256',['buffer_winc',['../structbuffer.html#a762408586689b960a4c2db5e0ef8b0bd',1,'buffer']]],
+  ['buffer_5fwpos_257',['buffer_wpos',['../structbuffer.html#aa8d9db77a9cc59df05f399a9e08541d3',1,'buffer']]],
+  ['buffer_5fwritable_258',['buffer_writable',['../structbuffer.html#aed250f2b8f0e82872a48d44f660402be',1,'buffer']]],
+  ['buffer_5fwrite_5fsize_259',['buffer_write_size',['../structbuffer.html#ac9f075bb15b2c16349c7fde3f2fb68ff',1,'buffer']]]
+];
