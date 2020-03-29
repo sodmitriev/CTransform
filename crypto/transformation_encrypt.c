@@ -120,7 +120,7 @@ void transformation_encrypt_destructor(transformation_encrypt *this)
 void transformation_encrypt_transform(transformation_encrypt *this)
 {
     int len;
-    while(buffer_write_size(this->base.sink) > transformation_encrypt_sink_min(this) &&
+    while(buffer_write_size(this->base.sink) >= transformation_encrypt_sink_min(this) &&
           buffer_readable(this->base.source))
     {
         size_t num = this->block_size < buffer_read_size(this->base.source) ?
