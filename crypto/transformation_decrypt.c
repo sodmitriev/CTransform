@@ -16,6 +16,7 @@
  */
 
 #include "transformation_decrypt.h"
+#include "mem_cleanse.h"
 #include <CEasyException/exception.h>
 #include <openssl/evp.h>
 #include <errno.h>
@@ -93,15 +94,21 @@ void transformation_decrypt_constructor(const char *cipher, const char *digest, 
     this->base.call_tab = &transformation_call_tab_decrypt;
     this->ctx = ctx;
     this->block_size = (size_t)block_size;
-    free(raw_key);
-    free(iv);
-    return;
+    goto transformation_decrypt_constructor_cleanup;
 
     transformation_decrypt_constructor_cleanup_ctx:
     EVP_CIPHER_CTX_free(ctx);
     transformation_decrypt_constructor_cleanup:
-    free(raw_key);
-    free(iv);
+    if(raw_key)
+    {
+        mem_cleanse(raw_key, (size_t)key_size);
+        free(raw_key);
+    }
+    if(iv)
+    {
+        mem_cleanse(iv, (size_t)iv_size);
+        free(iv);
+    }
 }
 
 void transformation_decrypt_destructor(transformation_decrypt *this)

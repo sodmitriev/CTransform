@@ -15,13 +15,17 @@
 
 find_package(OpenSSL REQUIRED)
 
+add_library(mem_cleanse mem_cleanse.h mem_cleanse.c)
+target_include_directories(mem_cleanse PRIVATE ${OPENSSL_INCLUDE_DIR})
+target_link_libraries(mem_cleanse ${OPENSSL_LIBRARIES})
+
 add_library(transformation_encrypt transformation_encrypt.h transformation_encrypt.c)
 target_include_directories(transformation_encrypt PRIVATE ${OPENSSL_INCLUDE_DIR})
-target_link_libraries(transformation_encrypt transformation ${OPENSSL_LIBRARIES})
+target_link_libraries(transformation_encrypt transformation mem_cleanse ${OPENSSL_LIBRARIES})
 
 add_library(transformation_decrypt transformation_decrypt.h transformation_decrypt.c)
 target_include_directories(transformation_decrypt PRIVATE ${OPENSSL_INCLUDE_DIR})
-target_link_libraries(transformation_decrypt transformation ${OPENSSL_LIBRARIES})
+target_link_libraries(transformation_decrypt transformation mem_cleanse ${OPENSSL_LIBRARIES})
 
 add_library(transformation_hash transformation_hash.h transformation_hash.c)
 target_include_directories(transformation_hash PRIVATE ${OPENSSL_INCLUDE_DIR})
