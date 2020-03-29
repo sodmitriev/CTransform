@@ -123,9 +123,13 @@ void transformation_encrypt_transform(transformation_encrypt *this)
     while(buffer_write_size(this->base.sink) >= transformation_encrypt_sink_min(this) &&
           buffer_readable(this->base.source))
     {
-        size_t num = this->block_size < buffer_read_size(this->base.source) ?
-                     this->block_size : buffer_read_size(this->base.source);
-        assert(num <= INT_MAX); //Because block should be smaller, as it's derived from int return of openssl
+        size_t max_num = buffer_write_size(this->base.sink) - this->block_size + 1;
+        if(max_num > INT_MAX)
+        {
+            max_num = INT_MAX;
+        }
+        size_t num = max_num < buffer_read_size(this->base.source) ?
+                     max_num : buffer_read_size(this->base.source);
         if(EVP_EncryptUpdate(this->ctx, (unsigned char *)buffer_wpos(this->base.sink), &len,
                              (const unsigned char *)buffer_rpos(this->base.source), (int)num) != 1)
         {
