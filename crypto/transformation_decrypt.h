@@ -36,6 +36,7 @@ typedef struct
     transformation base;
     struct evp_cipher_ctx_st *ctx;
     size_t block_size;
+    bool empty;
     //! @endcond
 } transformation_decrypt;
 

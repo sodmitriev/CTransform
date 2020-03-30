@@ -94,6 +94,7 @@ void transformation_decrypt_constructor(const char *cipher, const char *digest, 
     this->base.call_tab = &transformation_call_tab_decrypt;
     this->ctx = ctx;
     this->block_size = (size_t)block_size;
+    this->empty = true;
     goto transformation_decrypt_constructor_cleanup;
 
     transformation_decrypt_constructor_cleanup_ctx:
@@ -139,11 +140,16 @@ void transformation_decrypt_transform(transformation_decrypt *this)
         assert(len >= 0); //OpenSSL should guarantee this
         buffer_rinc(num, this->base.source);
         buffer_winc((size_t)len, this->base.sink);
+        this->empty = false;
     }
 }
 
 bool transformation_decrypt_finalize(transformation_decrypt *this)
 {
+    if(this->empty)
+    {
+        return true;
+    }
     int len;
     if(EVP_DecryptFinal_ex(this->ctx, (unsigned char *)buffer_wpos(this->base.sink), &len) != 1)
     {

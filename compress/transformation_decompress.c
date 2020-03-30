@@ -70,6 +70,7 @@ void transformation_decompress_constructor(transformation_decompress *this)
     this->base.sink = NULL;
     this->stream = stream;
     this->finished = false;
+    this->empty = true;
 }
 
 void transformation_decompress_destructor(transformation_decompress *this)
@@ -135,10 +136,18 @@ static void do_decompression(transformation_decompress *this)
 void transformation_decompress_transform(transformation_decompress *this)
 {
     do_decompression(this);
+    if(!EXCEPTION_IS_THROWN)
+    {
+        this->empty = false;
+    }
 }
 
 bool transformation_decompress_finalize(transformation_decompress *this)
 {
+    if(!buffer_readable(this->base.source) && this->empty)
+    {
+        return true;
+    }
     do_decompression(this);
     //If exception is thrown return shall not be analyzed
     return this->finished;

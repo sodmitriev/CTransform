@@ -36,6 +36,7 @@ typedef struct
     transformation base;
     struct z_stream_s *stream;
     bool finished;
+    bool empty;
     //! @endcond
 } transformation_decompress;
 

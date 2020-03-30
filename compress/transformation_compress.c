@@ -69,6 +69,7 @@ void transformation_compress_constructor(int level, transformation_compress *thi
     this->base.source = NULL;
     this->base.sink = NULL;
     this->stream = stream;
+    this->empty = true;
 }
 
 void transformation_compress_destructor(transformation_compress *this)
@@ -104,6 +105,7 @@ static int do_compression(transformation_compress *this, int flush)
     int ret = deflate(this->stream, flush);
     buffer_rinc(buffer_read_size(this->base.source) - this->stream->avail_in, this->base.source);
     buffer_winc(buffer_write_size(this->base.sink) - this->stream->avail_out, this->base.sink);
+    this->empty = false;
     return ret;
 }
 
@@ -124,10 +126,15 @@ void transformation_compress_transform(transformation_compress *this)
         }
         return;
     }
+    this->empty = false;
 }
 
 bool transformation_compress_finalize(transformation_compress *this)
 {
+    if(this->empty && !buffer_readable(this->base.source))
+    {
+        return true;
+    }
     int ret = do_compression(this, Z_FINISH);
     if(ret != Z_OK && ret != Z_STREAM_END)
     {

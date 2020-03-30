@@ -35,6 +35,7 @@ typedef struct
     //! @cond PRIVATE
     transformation base;
     struct z_stream_s *stream;
+    bool empty;
     //! @endcond
 } transformation_compress;
 
