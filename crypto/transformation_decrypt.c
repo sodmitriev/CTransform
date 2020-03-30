@@ -123,7 +123,7 @@ void transformation_decrypt_transform(transformation_decrypt *this)
     while(buffer_write_size(this->base.sink) >= transformation_decrypt_sink_min(this) &&
           buffer_readable(this->base.source))
     {
-        size_t max_num = buffer_write_size(this->base.sink) - this->block_size + 1;
+        size_t max_num = buffer_write_size(this->base.sink) - this->block_size;
         if(max_num > INT_MAX)
         {
             max_num = INT_MAX;
